@@ -1,0 +1,285 @@
+---
+// src/components/Portada.astro - Portada con el moño blanco de fondo, las
+// iniciales doradas arriba y el "Cliquea para abrir".
+// Toda la portada es el botón: se toca en cualquier parte y se abre.
+// La melodía arranca con ese toque (ver abrirTodo, en el script): es el
+// único momento en que el navegador deja sonar un audio, porque hace falta
+// un gesto de la persona. Desde ahí la maneja BotonMusica.astro.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const llamada = "Cliquea para abrir";
+const imagenFondo = "/imagenes/fondoportada.webp";
+const imagenIniciales = "/imagenes/iniciales.webp";
+// ──────────────────────────────────────────────────────────────
+---
+
+<!-- CAPA BLANCA DE TRANSICIÓN — tapa el fondo del layout durante el fade -->
+<div
+    id="capa-blanca"
+    style="
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(#f5efe7, #f5efe7);
+    z-index: 8499;
+    opacity: 1;
+    pointer-events: none;
+"
+>
+</div>
+
+<!--
+   La portada va por debajo del botón flotante de música (z 9000) para que
+   el control siga accesible mientras la portada se desvanece.
+-->
+<section
+    class="fixed inset-0 w-full h-screen flex justify-center z-[8500]"
+    id="portada-section"
+    style="background-image: linear-gradient(#f4f4f3, #f4f4f3);"
+>
+    <button
+        id="btn-portada"
+        type="button"
+        aria-label="Abrir la invitación"
+        class="marco"
+    >
+        <!-- El moño de fondo -->
+        <img
+            src={imagenFondo}
+            alt=""
+            width="860"
+            height="1551"
+            class="fondo"
+            id="portada-fondo"
+            fetchpriority="high"
+        />
+
+        <!-- Iniciales doradas -->
+        <img
+            src={imagenIniciales}
+            alt=""
+            width="520"
+            height="351"
+            class="iniciales"
+            id="portada-iniciales"
+        />
+
+        <p class="llamada" id="portada-llamada">{llamada}</p>
+
+    </button>
+</section>
+
+<style>
+    body.portada-activa {
+        overflow: hidden !important;
+        height: 100vh !important;
+    }
+
+    #capa-blanca {
+        transition: opacity 0.4s ease;
+    }
+
+    /* ── Marco: columna móvil, nunca se estira en tablet / PC ──── */
+    .marco {
+        /* Los tamaños en cqw se miden contra esta columna, no la ventana */
+        container-type: inline-size;
+        position: relative;
+        display: block;
+        width: 100%;
+        max-width: 430px;
+        height: 100%;
+        overflow: hidden;
+        padding: 0;
+        border: 0;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        /*
+           El blanco va declarado como degradado y no como color: el modo
+           oscuro forzado oscurece colores pero respeta las imágenes.
+        */
+        background-image: linear-gradient(#f6f6f5, #f6f6f5);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .fondo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        user-select: none;
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    .iniciales {
+        position: absolute;
+        top: 3.5%;
+        left: 50%;
+        width: 38cqw;
+        height: auto;
+        transform: translateX(-50%);
+        user-select: none;
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    .llamada {
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        width: 38cqw;
+        margin: 0;
+        transform: translateX(-50%);
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 600;
+        font-size: 4.6cqw;
+        line-height: 1.15;
+        text-transform: uppercase;
+        text-align: center;
+        color: #2b2b2b;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+
+    if (typeof window !== "undefined") {
+        document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("portada-activa");
+
+            const boton = document.getElementById("btn-portada");
+            const fondo = document.getElementById("portada-fondo");
+            const iniciales = document.getElementById("portada-iniciales");
+            const llamada = document.getElementById("portada-llamada");
+            const seccion = document.getElementById("portada-section");
+            const capaBlanca = document.getElementById("capa-blanca");
+            if (!boton) return;
+
+            const menosMovimiento = window.matchMedia(
+                "(prefers-reduced-motion: reduce)",
+            ).matches;
+
+            let abriendo = false;
+
+            // ── Entrada ─────────────────────────────────────────────
+            gsap.set(fondo, { opacity: 0, scale: 1.05 });
+            gsap.set([iniciales, llamada], { opacity: 0, y: 12 });
+
+            const tl = gsap.timeline({ delay: 0.2 });
+            tl.to(fondo, { opacity: 1, scale: 1, duration: 1.4, ease: "power2.out" })
+                .to(
+                    iniciales,
+                    { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+                    0.4,
+                )
+                .to(
+                    llamada,
+                    { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
+                    0.75,
+                );
+
+            // "Cliquea para abrir" late apenas, para que se note que se toca
+            let latido: gsap.core.Tween | null = null;
+            if (!menosMovimiento) {
+                tl.add(() => {
+                    latido = gsap.to(llamada, {
+                        opacity: 0.45,
+                        duration: 1.1,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "sine.inOut",
+                    });
+                });
+            }
+
+            // ── Suelta el scroll y deja la invitación arrancada en el
+            //    sobre de NombresFlores, su primera sección.
+            const abrirInvitacion = () => {
+                document.body.classList.remove("portada-activa");
+                document.body.style.overflow = "auto";
+
+                const destino = document.getElementById("sobre-novios");
+                if (destino) {
+                    destino.scrollIntoView({ block: "start" });
+                } else {
+                    window.scrollTo({ top: 0 });
+                }
+
+                // Aviso para que NombresFlores recién ahora arranque su
+                // entrada (si no, se dispararía en la carga, tapada).
+                (window as any).portadaAbierta = true;
+                window.dispatchEvent(new Event("portada-abierta"));
+            };
+
+            // ── Abrir la invitación ─────────────────────────────────
+            const abrirTodo = () => {
+                if (abriendo) return;
+                abriendo = true;
+                latido?.kill();
+                tl.progress(1);
+
+                /*
+                   Acá arranca la música, y tiene que ser acá: los
+                   navegadores solo dejan sonar un audio si lo pide un
+                   gesto de la persona. Queda en window.audioGlobal para
+                   que el botón de la esquina maneje esta misma melodía.
+                */
+                const yaExiste = (window as any).audioGlobal as
+                    | HTMLAudioElement
+                    | undefined;
+                const melodia = yaExiste ?? new Audio("/musica/melodia2.mp3");
+                melodia.loop = true;
+                melodia.volume = 0.65;
+                (window as any).audioGlobal = melodia;
+                melodia.play().catch(() => {});
+
+                // Los textos se van, el moño se acerca y la portada se desvanece
+                const t = gsap.timeline();
+                t.to(llamada, {
+                    opacity: 0,
+                    y: -10,
+                    duration: 0.45,
+                    stagger: 0.08,
+                    ease: "power2.in",
+                })
+                    .to(
+                        iniciales,
+                        { opacity: 0, y: -16, duration: 0.6, ease: "power2.in" },
+                        0.1,
+                    )
+                    .to(
+                        fondo,
+                        {
+                            scale: menosMovimiento ? 1 : 1.25,
+                            duration: 1.1,
+                            ease: "power2.in",
+                        },
+                        0.15,
+                    )
+                    .to(
+                        seccion,
+                        {
+                            opacity: 0,
+                            duration: 0.6,
+                            ease: "power2.in",
+                            onStart: abrirInvitacion,
+                            onComplete: () => {
+                                seccion?.remove();
+                                // Desvanecer la capa blanca suavemente
+                                gsap.to(capaBlanca, {
+                                    opacity: 0,
+                                    duration: 0.4,
+                                    ease: "power2.out",
+                                    onComplete: () => capaBlanca?.remove(),
+                                });
+                            },
+                        },
+                        0.7,
+                    );
+            };
+
+            boton.addEventListener("click", abrirTodo);
+        });
+    }
+</script>

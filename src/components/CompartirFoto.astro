@@ -1,0 +1,89 @@
+---
+// src/components/CompartirFoto.astro - "Fotos y videos": el hashtag de la
+// boda (las iniciales), el título dorado, una cámara animada (dorada), la invitación a
+// compartir las fotos y el botón "Tomar foto".
+// El botón lleva al link donde los invitados suben sus fotos y videos.
+// Mientras los novios no manden el link queda en "#" (no lleva a ningún lado).
+import Mano from "./Mano.astro";
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const hashtag = "V&E";
+const titulo = "Fotos y videos";
+const texto =
+    "Presiona el botón para capturar o enviamos las fotos cuando creas que es el mejor momento de la boda.";
+const boton = "Tomar foto";
+// El link para subir fotos: reemplazar el "#" cuando lo manden
+const enlace = "#";
+// ──────────────────────────────────────────────────────────────
+
+const externo = enlace !== "#";
+---
+
+<section class="inv-seccion compartir">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+
+    <h2 class="inv-titulo anima">
+        <span class="hashtag">{hashtag}</span>
+        <span>{titulo}</span>
+    </h2>
+
+    <img src="/imagenes/fotografia.webp" alt="" width="180" height="180" class="camara anima" aria-hidden="true" />
+
+    <p class="inv-texto texto anima">{texto}</p>
+
+    <div class="accion anima">
+        <div class="inv-boton-fila">
+            <a class="inv-boton" href={enlace} target={externo ? "_blank" : undefined} rel={externo ? "noopener noreferrer" : undefined}>{boton}</a>
+            <Mano />
+        </div>
+    </div>
+</section>
+
+<style>
+    .compartir {
+        padding-top: 14cqw;
+        padding-bottom: 12cqw;
+    }
+
+    .flor-izq {
+        top: 4cqw;
+        left: -12cqw;
+        width: 22cqw;
+    }
+
+    .flor-der {
+        top: 34cqw;
+        right: -8cqw;
+        width: 20cqw;
+    }
+
+    .inv-titulo span {
+        display: block;
+    }
+
+    .camara {
+        display: block;
+        width: 32cqw;
+        height: auto;
+        margin: 5cqw auto 0;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .texto {
+        max-width: 74cqw;
+        margin: 4cqw auto 0;
+        font-size: 4.2cqw;
+        line-height: 1.5;
+    }
+
+    .accion {
+        margin-top: 6cqw;
+    }
+
+    .accion :global(.inv-mano) {
+        margin-top: 6cqw;
+        margin-left: -2cqw;
+    }
+</style>

@@ -1,0 +1,259 @@
+---
+// src/components/PaseInvitado.astro
+// El pase: a quién va dirigida la invitación (si hay nombre) y cuántos
+// lugares tiene reservados. Un círculo con la etiqueta, "Hemos reservado:",
+// un circulito verde por lugar, el número y "pase(s) en su honor".
+//
+// Se ve con un invitado fijo (/muestra), con un número de pases (/pase1,
+// /pase2...) o conectada al panel (index.astro con ?i=): en ese caso se
+// dibuja escondida y el script la llena cuando contesta la base. Si los
+// novios corrigen el nombre o los pases, cambia sin recargar.
+import { pasesEnSuHonor } from "../scripts/frasesPase";
+
+export interface Props {
+    invitado?: string;
+    pases?: number;
+    conectado?: boolean;
+}
+const { invitado = "", pases: pasesProp = 0, conectado = false } = Astro.props;
+
+// Conectada y todavía sin datos: un lugar de molde, que el script copia
+// uno por pase
+const pases = pasesProp > 0 ? pasesProp : 1;
+const visible = Boolean(invitado) || pasesProp > 0;
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const encabezado = "Con mucho cariño para";
+const reservado = "Hemos reservado:";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section
+    id="pase-invitado"
+    class="inv-seccion pase"
+    style={visible ? undefined : "display: none"}
+    data-conectado={conectado ? "" : undefined}
+>
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor inv-flor-espejo flor-izq" aria-hidden="true" />
+
+    <!-- El ícono animado del pase (dorado), dentro de un círculo fino -->
+    <div class="etiqueta" aria-hidden="true">
+        <img src="/imagenes/pase.webp" alt="" width="220" height="220" />
+    </div>
+
+    <div class="para" id="para-invitado" style={invitado ? undefined : "display: none"}>
+        <p class="inv-texto encabezado">{encabezado}</p>
+        <p class="inv-nombres nombre" id="nombre-invitado">{invitado}</p>
+    </div>
+
+    <p class="inv-texto reservado" id="texto-pase">{reservado}</p>
+
+    <!-- Un circulito por cada lugar -->
+    <div class="personas" id="iconos-pase" aria-hidden="true">
+        {
+            Array.from({ length: pases }).map(() => (
+                <span class="persona">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8.5" r="3.6" />
+                        <path d="M5.5 19.5c0-3.8 2.9-6.5 6.5-6.5s6.5 2.7 6.5 6.5z" />
+                    </svg>
+                </span>
+            ))
+        }
+    </div>
+
+    <p class="numero" id="numero-pase"><span id="numero-pases">{pases}</span></p>
+    <p class="inv-texto honor" id="palabra-pases">{pasesEnSuHonor(pases)}</p>
+</section>
+
+<style>
+    .pase {
+        padding-top: 10cqw;
+        padding-bottom: 6cqw;
+        padding-left: 3cqw;
+        padding-right: 3cqw;
+    }
+
+    .flor-izq {
+        bottom: -30cqw;
+        left: -6cqw;
+        width: 22cqw;
+    }
+
+    .etiqueta {
+        display: grid;
+        place-items: center;
+        width: 30cqw;
+        height: 30cqw;
+        margin: 0 auto;
+        border: 1px solid #9a9a94;
+        border-radius: 50%;
+        color: #c98f3c;
+    }
+
+    .etiqueta img {
+        width: 20cqw;
+        height: 20cqw;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .para {
+        margin-top: 6cqw;
+    }
+
+    .encabezado {
+        font-size: 4cqw;
+    }
+
+    /* El nombre puede bajar de renglón: no se achica hasta entrar */
+    .nombre {
+        margin-top: 4cqw;
+        font-size: 6.6cqw;
+        line-height: 1.55;
+        overflow-wrap: break-word;
+    }
+
+    .reservado {
+        margin-top: 6cqw;
+        font-size: 4.4cqw;
+    }
+
+    .personas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2.4cqw;
+        max-width: 70cqw;
+        margin: 4cqw auto 0;
+    }
+
+    .persona {
+        display: grid;
+        place-items: center;
+        width: 10cqw;
+        height: 10cqw;
+        border-radius: 50%;
+        background-image: linear-gradient(var(--oliva), var(--oliva));
+        color: #fff;
+    }
+
+    .persona svg {
+        width: 6.5cqw;
+        height: 6.5cqw;
+        fill: currentColor;
+    }
+
+    .numero {
+        margin: 3cqw 0 0;
+        font-weight: 700;
+        font-size: 7.5cqw;
+        line-height: 1;
+        color: #2f3a3a;
+    }
+
+    .honor {
+        margin-top: 1cqw;
+        font-size: 4.4cqw;
+    }
+</style>
+
+<script>
+    import { animarEntrada } from "../scripts/animaciones";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { pasesEnSuHonor } from "../scripts/frasesPase";
+    import {
+        datosInvitado,
+        alCambiarInvitado,
+        type Invitado,
+    } from "../lib/invitado";
+
+    // Las animaciones se arman una sola vez, y recién cuando la tarjeta se
+    // ve: armadas sobre una sección escondida, el disparador queda medido
+    // en cualquier lado.
+    let animada = false;
+
+    function animar(seccion: HTMLElement) {
+        if (animada) return;
+        animada = true;
+        animarEntrada(
+            seccion.querySelectorAll(
+                ".etiqueta, .para, .reservado, .persona, .numero, .honor",
+            ),
+            seccion,
+            { stagger: 0.08 },
+        );
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("pase-invitado");
+        if (!seccion) return;
+        // Conectada y todavía sin invitado: se anima al aparecer
+        if (seccion.style.display === "none") return;
+        animar(seccion);
+    });
+
+    // ── CONECTADA AL PANEL ────────────────────────────────────────
+    // Un circulito por pase. Se copia el que ya está dibujado para que
+    // conserve los estilos del componente.
+    function pintarLugares(pases: number) {
+        const caja = document.getElementById("iconos-pase");
+        const molde = caja?.querySelector(".persona");
+        if (!caja || !molde) return;
+        if (caja.querySelectorAll(".persona").length === pases) return;
+
+        const nuevos = Array.from({ length: pases }, () => {
+            const copia = molde.cloneNode(true) as HTMLElement;
+            // Sin lo que le haya dejado puesto la animación de entrada
+            copia.removeAttribute("style");
+            return copia;
+        });
+        caja.replaceChildren(...nuevos);
+    }
+
+    function pintarPase(nombre: string | null, pases: number | null) {
+        if (nombre) {
+            const el = document.getElementById("nombre-invitado");
+            const para = document.getElementById("para-invitado");
+            if (el) el.textContent = nombre;
+            if (para) para.style.display = "";
+        }
+        if (Number.isInteger(pases) && (pases as number) > 0) {
+            const n = pases as number;
+            const num = document.getElementById("numero-pases");
+            const palabra = document.getElementById("palabra-pases");
+            if (num) num.textContent = String(n);
+            if (palabra) palabra.textContent = pasesEnSuHonor(n);
+            pintarLugares(n);
+        }
+    }
+
+    function mostrar(inv: Invitado | null) {
+        const seccion = document.getElementById("pase-invitado");
+        if (!seccion || !seccion.hasAttribute("data-conectado")) return;
+        // Sin invitado (sin ?i=, borrado o sin conexión) se deja como está:
+        // escondida si nunca llegó nadie, con los últimos datos si ya llegó.
+        if (!inv) return;
+
+        const sinPases =
+            (inv.funciones as { pases?: boolean } | undefined)?.pases === false;
+        for (const id of ["texto-pase", "numero-pase", "palabra-pases", "iconos-pase"]) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = sinPases ? "none" : "";
+        }
+        pintarPase(inv.nombre, sinPases ? null : inv.pases);
+
+        if (seccion.style.display === "none") {
+            seccion.style.display = "";
+            animar(seccion);
+        }
+        // La tarjeta empuja todo lo de abajo: los disparadores se vuelven
+        // a medir
+        ScrollTrigger.refresh();
+    }
+
+    if (document.getElementById("pase-invitado")?.hasAttribute("data-conectado")) {
+        datosInvitado().then(mostrar);
+        alCambiarInvitado((inv) => mostrar(inv));
+    }
+</script>

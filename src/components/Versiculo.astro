@@ -1,0 +1,62 @@
+---
+// src/components/Versiculo.astro - Versículo de cierre, debajo del álbum de
+// fotos. Mismo formato que el versículo de la primera sección (Inicio): las
+// flores a los dos costados y el texto en el medio, con la cita en el
+// renglón de abajo.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const versiculo =
+    "“Dos son mejor que uno, porque obtienen más fruto de su esfuerzo. Y si caen, uno levantará al otro.”";
+const cita = "Eclesiastés 4:9-10";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion versiculo-seccion">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-der" aria-hidden="true" />
+
+    <p class="inv-texto versiculo anima">
+        {versiculo}<br />
+        <span class="cita">{cita}</span>
+    </p>
+</section>
+
+<style>
+    .versiculo-seccion {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 54cqw;
+        padding-top: 6cqw;
+        padding-bottom: 6cqw;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .flor-izq,
+    .flor-der {
+        top: 2cqw;
+        width: 26cqw;
+    }
+
+    .flor-izq {
+        left: -11cqw;
+    }
+
+    .flor-der {
+        right: -11cqw;
+    }
+
+    .versiculo {
+        max-width: 66cqw;
+        margin: 0 auto;
+        font-size: 4cqw;
+        line-height: 1.5;
+    }
+
+    .cita {
+        display: inline-block;
+        margin-top: 3cqw;
+        font-size: 0.9em;
+    }
+</style>

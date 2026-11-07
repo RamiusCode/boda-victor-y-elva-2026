@@ -1,0 +1,101 @@
+---
+// src/components/Padres.astro - "Con la bendición de Dios y de nuestros
+// padres", los padres en dos columnas y los nombres de los novios grandes,
+// en cursiva dorada (cada uno en su renglón: no se achican para entrar).
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const bendicion = "Con la bendición de Dios y de nuestros padres:";
+const rotuloNovio = "Padres del novio";
+const rotuloNovia = "Padres de la novia";
+const padresNovio = ["Juan Jose Serrudo Miranda", "Felicidad Loayza Herrera"];
+const padresNovia = ["Eleuterio Caraballo Solíz", "Alejandra Irala Cuéllar"];
+const novio = "Victor Augusto";
+const novia = "Elva";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion padres">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+
+    <p class="inv-texto bendicion anima">{bendicion}</p>
+
+    <div class="columnas anima">
+        <p><span class="rotulo">{rotuloNovio}</span>{padresNovio.map((nombre) => <span>{nombre}</span>)}</p>
+        <p><span class="rotulo">{rotuloNovia}</span>{padresNovia.map((nombre) => <span>{nombre}</span>)}</p>
+    </div>
+
+    <h1 class="inv-nombres novios anima">
+        <span>{novio}</span>
+        <span class="amp">&</span>
+        <span>{novia}</span>
+    </h1>
+</section>
+
+<style>
+    .padres {
+        padding-top: 6cqw;
+        padding-left: 3cqw;
+        padding-right: 3cqw;
+    }
+
+    .flor-izq {
+        top: 4cqw;
+        left: -14cqw;
+        width: 28cqw;
+    }
+
+    .flor-der {
+        top: 52cqw;
+        right: -6cqw;
+        width: 24cqw;
+    }
+
+    .bendicion {
+        max-width: 76cqw;
+        margin: 0 auto;
+        font-size: 4.6cqw;
+    }
+
+    .columnas {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3cqw;
+        margin-top: 5cqw;
+    }
+
+    .columnas p {
+        margin: 0;
+        font-size: 3.25cqw;
+        line-height: 1.5;
+    }
+
+    .columnas span {
+        display: block;
+    }
+
+    /* Igual que los rótulos de los padrinos */
+    .columnas .rotulo {
+        margin-bottom: 1cqw;
+        font-weight: 700;
+        font-size: 3.4cqw;
+        text-transform: uppercase;
+        color: #4a4a44;
+    }
+
+    .novios {
+        margin-top: 9cqw;
+        font-size: 10.8cqw;
+    }
+
+    .novios span {
+        display: block;
+        line-height: 1.35;
+    }
+
+    .amp {
+        font-size: 0.75em;
+        line-height: 1.2;
+        margin: 1.5cqw 0;
+    }
+</style>

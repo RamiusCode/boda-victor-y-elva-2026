@@ -1,0 +1,207 @@
+/*
+   src/styles/invitacion.css
+   El estilo común de todas las secciones de adentro (la portada tiene el
+   suyo). Hoja blanca, letra redonda (Quicksand), títulos dorados en
+   mayúsculas, nombres en cursiva dorada y flores blancas de acuarela que
+   asoman por los costados.
+
+   Los tamaños van en cqw: se miden contra la columna de 430px
+   (#contenido-principal), así se ve igual en el celular y en la PC.
+*/
+
+:root {
+    --oro: #c3922f;
+    --oro-oscuro: #ad7f27;
+    --oliva: #8a9672;
+    --verde-gris: #7c897b;
+    --linea: #2f4a3e;
+    --texto: #3a3a36;
+}
+
+#contenido-principal {
+    /* El blanco va como imagen: el modo oscuro forzado no lo oscurece */
+    background-image: linear-gradient(#ffffff, #ffffff);
+    color: var(--texto);
+    font-family: "Quicksand", sans-serif;
+    font-weight: 500;
+}
+
+/* ── Sección ─────────────────────────────────────────────── */
+.inv-seccion {
+    position: relative;
+    padding: 12cqw 8cqw;
+    text-align: center;
+    /* Las flores salen por los costados: se cortan en el borde de la
+       columna pero pueden pisar la sección de arriba o de abajo */
+    overflow-x: clip;
+}
+
+.inv-titulo {
+    margin: 0;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 400;
+    font-size: 7.4cqw;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--oro);
+}
+
+.inv-texto {
+    margin: 0;
+    font-size: 4.4cqw;
+    line-height: 1.45;
+    color: var(--texto);
+}
+
+.inv-nombres {
+    margin: 0;
+    font-family: "Amoresa", cursive;
+    font-weight: 400;
+    color: var(--oro);
+    line-height: 1.05;
+    /* La cursiva trae un espacio muy angosto: las palabras se pegaban */
+    word-spacing: 0.18em;
+}
+
+/* ── Flores de los costados ──────────────────────────────── */
+.inv-flor {
+    position: absolute;
+    z-index: 0;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    opacity: 0.9;
+}
+
+/* La de la esquina viene cortada a la derecha: del lado izquierdo va
+   espejada para que también "salga" del borde */
+.inv-flor-espejo {
+    transform: scaleX(-1);
+}
+
+/* Se mecen apenas, cada una a su ritmo */
+@media (prefers-reduced-motion: no-preference) {
+    .inv-flor {
+        animation: inv-mecer 7s ease-in-out infinite alternate;
+    }
+    .inv-flor-espejo {
+        animation-name: inv-mecer-espejo;
+        animation-duration: 8s;
+    }
+}
+
+@keyframes inv-mecer {
+    from { rotate: -1.5deg; }
+    to { rotate: 1.5deg; }
+}
+
+@keyframes inv-mecer-espejo {
+    from { rotate: 1.5deg; }
+    to { rotate: -1.5deg; }
+}
+
+/* Lo que va por delante de las flores */
+.inv-seccion > :not(.inv-flor) {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Fotos a todo el ancho que se funden con el blanco ───── */
+.inv-foto {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 860 / 1100;
+    object-fit: cover;
+    object-position: center 30%;
+    -webkit-mask-image: linear-gradient(
+        180deg,
+        transparent 0%,
+        #000 14%,
+        #000 80%,
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        180deg,
+        transparent 0%,
+        #000 14%,
+        #000 80%,
+        transparent 100%
+    );
+}
+
+/* ── Botones ─────────────────────────────────────────────── */
+.inv-boton-fila {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5cqw;
+}
+
+.inv-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.4cqw;
+    padding: 2.6cqw 9cqw;
+    border: 0;
+    /* La forma de hoja: más redonda en dos esquinas opuestas */
+    border-radius: 7cqw 2cqw 7cqw 2cqw;
+    background-image: linear-gradient(var(--oro-oscuro), var(--oro-oscuro));
+    color: #fff;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 600;
+    font-size: 4cqw;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(120, 85, 20, 0.18);
+    transition: transform 0.2s ease;
+}
+
+.inv-boton:active {
+    transform: scale(0.96);
+}
+
+/* El botón con borde fino ("Agendar en el calendario") */
+.inv-boton-borde {
+    background-image: none;
+    background-color: transparent;
+    color: var(--texto);
+    font-weight: 500;
+    border: 1px solid #c9c9c4;
+    border-radius: 1.2cqw;
+    box-shadow: none;
+    padding: 2cqw 4cqw;
+}
+
+/* La manito que invita a tocar */
+.inv-mano {
+    flex: none;
+    width: 7.5cqw;
+    height: 7.5cqw;
+    color: var(--oro-oscuro);
+    margin-top: 5cqw;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .inv-mano {
+        animation: inv-tocar 1.6s ease-in-out infinite;
+        transform-origin: 40% 20%;
+    }
+}
+
+@keyframes inv-tocar {
+    0%, 60%, 100% { transform: translate(0, 0) scale(1); }
+    30% { transform: translate(-1.2cqw, -1.2cqw) scale(0.92); }
+}
+
+/* ── Adorno: corazón chico ──────────────────────────────── */
+.inv-corazon {
+    display: block;
+    width: 6cqw;
+    height: 6cqw;
+    margin: 4cqw auto;
+    color: var(--oliva);
+}

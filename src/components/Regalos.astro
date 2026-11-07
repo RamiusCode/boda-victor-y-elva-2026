@@ -1,0 +1,129 @@
+---
+// src/components/Regalos.astro - Sugerencia de regalos: un regalito, el
+// agradecimiento de los novios, los datos de la cuenta (si los hay) y la
+// firma con sus nombres. Mismo estilo del resto de las secciones.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const agradecimiento =
+    "Dios ha sido fiel con nosotros y estamos muy agradecidos por comenzar este nuevo capítulo de nuestras vidas rodeados de tanto amor.";
+const presencia =
+    "Tu presencia es el mejor regalo que podemos recibir en este día tan especial. Si deseas acompañarnos también en esta nueva etapa de nuestro hogar.";
+const datosIntro =
+    "Te dejamos con cariño nuestros datos para quienes deseen apoyarnos de corazón.";
+// Las cuentas que manden los novios, una por renglón. Si queda vacío, el
+// aviso "Te dejamos nuestros datos" no se muestra.
+// Ejemplo: const cuentas = ["BCP: 000000000000", "CCI: 00000000000000000"];
+const cuentas: string[] = [];
+const detalle =
+    "Cada muestra de cariño, oración o detalle significa mucho para nosotros y será recibida con profunda gratitud y guardada en nuestro corazón.";
+const despedida = "Con todo nuestro cariño,";
+const novio = "Victor Augusto";
+const novia = "Elva";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion regalos">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-izq" aria-hidden="true" />
+
+    <!-- La ramita de hojas que separa esta sección de la de arriba -->
+    <img src="/imagenes/ramita.webp" alt="" width="360" height="285" class="ramita anima" aria-hidden="true" />
+
+    <!-- El regalito animado (dorado) -->
+    <img src="/imagenes/regalo.webp" alt="" width="180" height="180" class="regalo anima" aria-hidden="true" />
+
+    <p class="inv-texto parrafo anima">{agradecimiento}</p>
+    <p class="inv-texto parrafo anima">{presencia}</p>
+
+    {
+        cuentas.length > 0 && (
+            <div class="anima">
+                <p class="inv-texto parrafo">{datosIntro}</p>
+                <p class="inv-texto cuentas">
+                    {cuentas.map((c) => (
+                        <span>{c}</span>
+                    ))}
+                </p>
+            </div>
+        )
+    }
+
+    <p class="inv-texto parrafo anima">{detalle}</p>
+
+    <p class="inv-texto despedida anima">{despedida}</p>
+    <p class="inv-nombres firma anima">
+        <span>{novio}</span>
+        <span class="amp">&</span>
+        <span>{novia}</span>
+    </p>
+</section>
+
+<style>
+    .regalos {
+        padding-top: 10cqw;
+        padding-bottom: 12cqw;
+    }
+
+    .flor-izq {
+        top: 12cqw;
+        left: -12cqw;
+        width: 24cqw;
+    }
+
+    .ramita {
+        display: block;
+        width: 20cqw;
+        height: auto;
+        margin: 0 auto 8cqw;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .regalo {
+        display: block;
+        width: 30cqw;
+        height: auto;
+        margin: 0 auto 8cqw;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .parrafo {
+        max-width: 76cqw;
+        margin: 0 auto 9cqw;
+        font-size: 4.4cqw;
+        line-height: 1.6;
+    }
+
+    .cuentas {
+        margin: 0 auto 6cqw;
+        font-weight: 700;
+        font-size: 4.4cqw;
+        line-height: 1.7;
+    }
+
+    .cuentas span {
+        display: block;
+    }
+
+    .despedida {
+        margin-top: 10cqw;
+        font-size: 4.4cqw;
+    }
+
+    /* Los nombres, igual que en la sección de los padres */
+    .firma {
+        margin-top: 9cqw;
+        font-size: 8cqw;
+    }
+
+    .firma span {
+        display: block;
+        line-height: 1.35;
+    }
+
+    .amp {
+        font-size: 0.75em;
+        line-height: 1.2;
+        margin: 1.5cqw 0;
+    }
+</style>

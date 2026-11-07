@@ -1,0 +1,78 @@
+---
+// src/components/Puntualidad.astro - Pedido de puntualidad: un reloj animado
+// (dorado) y la frase "Tu puntualidad es clave para que todo salga como lo
+// soñamos", con dos palabras destacadas en cursiva dorada.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const inicio = "Tu puntualidad es";
+const destacada1 = "clave";
+const medio = "para que todo salga como lo";
+const destacada2 = "soñamos";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion puntualidad">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+
+    <img src="/imagenes/ramita.webp" alt="" width="360" height="285" class="ramita anima" aria-hidden="true" />
+
+    <img src="/imagenes/hora.webp" alt="" width="180" height="180" class="reloj anima" aria-hidden="true" />
+
+    <p class="inv-texto frase anima">
+        {inicio} <span class="inv-nombres resalta">{destacada1}</span><br />
+        {medio} <span class="inv-nombres resalta">{destacada2}</span>.
+    </p>
+</section>
+
+<style>
+    .puntualidad {
+        /* Se acerca a la confirmación de arriba (que deja aire de sobra abajo) */
+        margin-top: -8cqw;
+        padding-top: 0;
+        padding-bottom: 22cqw;
+    }
+
+    .flor-izq {
+        top: 0;
+        left: -14cqw;
+        width: 24cqw;
+    }
+
+    .flor-der {
+        bottom: 0;
+        right: -8cqw;
+        width: 20cqw;
+    }
+
+    .ramita {
+        display: block;
+        width: 20cqw;
+        height: auto;
+        margin: 0 auto 4cqw;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .reloj {
+        display: block;
+        width: 22cqw;
+        height: auto;
+        margin: 0 auto;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .frase {
+        max-width: 74cqw;
+        margin: 7cqw auto 0;
+        font-size: 5cqw;
+        line-height: 1.7;
+    }
+
+    /* Las dos palabras destacadas, en la cursiva dorada de los nombres */
+    .resalta {
+        font-size: 1.5em;
+        line-height: 1;
+    }
+</style>

@@ -1,0 +1,125 @@
+---
+// src/layouts/Layout.astro
+import "../styles/global.css";
+export interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+
+/*
+   ── La vista previa al compartir el link ──────────────────────
+   La imagen va en 1200x630, que es la franja que usa WhatsApp. Si se
+   pone una imagen vertical, WhatsApp le corta arriba y abajo y se ve un
+   pedazo del medio. miniatura-whatsapp.jpg sale de miniatura.png (ya
+   hecha en 1200x630), comprimida a JPG para que cargue rápido.
+
+   La ruta se arma con Astro.site (la dirección del config): WhatsApp no
+   sigue rutas relativas, necesita la dirección completa.
+
+   No va og:description ni og:site_name a propósito, y el título es un
+   carácter invisible: la tarjeta muestra solo la imagen grande y el link,
+   sin ningún texto.
+*/
+// El ?v= se sube cada vez que cambia la imagen: WhatsApp guarda la vieja
+// por la dirección y así la toma como nueva.
+const miniatura = new URL('/imagenes/miniatura-whatsapp.jpg?v=8', Astro.site).href;
+const paginaActual = new URL(Astro.url.pathname, Astro.site).href;
+// Sin texto en la tarjeta: WhatsApp necesita un título, así que va un
+// carácter invisible (relleno hangul). Se ve solo la imagen y el link.
+const tituloPreview = 'ㅤ';
+---
+
+<!doctype html>
+<html lang="es" class="m-0 p-0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="only light" />
+    <link rel="icon" type="image/png" href="/iconos/Anillos.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <!-- ── Vista previa al compartir el link ─────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={tituloPreview} />
+    <meta property="og:url" content={paginaActual} />
+    <meta property="og:image" content={miniatura} />
+    <meta property="og:image:secure_url" content={miniatura} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tituloPreview} />
+    <meta property="og:locale" content="es_ES" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={tituloPreview} />
+    <meta name="twitter:image" content={miniatura} />
+    <!--
+      La cursiva de los nombres (Amoresa) se sirve desde el propio sitio
+      (/fonts/) y se pide antes que nada: traída de Google, en celulares con
+      señal regular el nombre tardaba en aparecer. El resto de las letras
+      va en UN solo pedido a Google.
+    -->
+    <link rel="preload" href="/fonts/Amoresa-Regular.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&family=Crimson+Text:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Forzar modo claro y evitar dark mode del navegador */
+      html {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        color-scheme: only light;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        color-scheme: only light;
+        /* Fuera de la columna móvil (tablet / PC) */
+        background-color: #e9e4dd;
+      }
+
+      /* La invitación SIEMPRE se ve como celular: columna centrada */
+      main {
+        width: 100%;
+        max-width: 430px;
+        margin: 0 auto;
+        min-height: 100vh;
+        /*
+           Papel crema liso de punta a punta (#f5efe7). Antes acá iba la acuarela
+           (fondo.webp); se sacó a pedido.
+
+           El fondo va declarado como imagen y no como color: el modo
+           oscuro forzado de algunos celulares oscurece los colores pero
+           respeta las imágenes, así que escrito así la hoja no se vuelve
+           gris ni negra.
+        */
+        background-image: linear-gradient(#f5efe7, #f5efe7);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen m-0 p-0">
+    <main class="m-0 p-0 overflow-x-hidden">
+      <slot />
+    </main>
+  </body>
+</html>

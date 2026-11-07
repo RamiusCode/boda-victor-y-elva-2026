@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* La cursiva de los nombres (Amoresa), servida desde el propio sitio (ver Layout) */
+@font-face {
+  font-family: 'Amoresa';
+  src: url('/fonts/Amoresa-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-nombres {
+  font-family: 'Amoresa', cursive !important;
+}
+
+.font-crimson {
+  font-family: 'Crimson Text', serif !important;
+}

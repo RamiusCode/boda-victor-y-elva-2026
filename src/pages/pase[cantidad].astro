@@ -1,0 +1,31 @@
+---
+// src/pages/pase[cantidad].astro
+// Las invitaciones con pase: /pase1, /pase2, /pase3, /pase4...
+//
+// Es UN SOLO archivo para todas: no hay que copiar el index ni renombrar
+// nada. Para sumar una nueva (/pase5, por ejemplo) alcanza con agregar el
+// número a la lista PASES de acá abajo.
+//
+// La que va SIN pase es el index (/), que no manda número.
+import Layout from "../layouts/Layout.astro";
+import Invitacion from "../components/Invitacion.astro";
+
+export function getStaticPaths() {
+    // ── LO ÚNICO QUE SE TOCA ──────────────────────────────────
+    // Un número por cada enlace que quieras: el 1 crea /pase1, el 2
+    // crea /pase2, y así.
+    const PASES = [1, 2, 3, 4];
+    // ──────────────────────────────────────────────────────────
+
+    return PASES.map((cantidad) => ({
+        params: { cantidad: String(cantidad) },
+        props: { cantidad },
+    }));
+}
+
+const { cantidad } = Astro.props;
+---
+
+<Layout title="Victor & Elva | 18 de Diciembre 2026">
+    <Invitacion pases={cantidad} />
+</Layout>

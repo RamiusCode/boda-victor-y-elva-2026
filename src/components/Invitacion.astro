@@ -1,0 +1,101 @@
+---
+// src/components/Invitacion.astro
+// El cuerpo completo de la invitación, en un solo lugar.
+import "../styles/invitacion.css";
+import Portada from "./Portada.astro";
+import Inicio from "./Inicio.astro";
+import Padres from "./Padres.astro";
+import Padrinos from "./Padrinos.astro";
+import Fecha from "./Fecha.astro";
+import PaseInvitado from "./PaseInvitado.astro";
+import Ubicacion from "./Ubicacion.astro";
+import Vestimenta from "./Vestimenta.astro";
+import NoNinos from "./NoNinos.astro";
+import Regalos from "./Regalos.astro";
+import CompartirFoto from "./CompartirFoto.astro";
+import Confirmacion from "./Confirmacion.astro";
+import Puntualidad from "./Puntualidad.astro";
+import AlbumFotos from "./AlbumFotos.astro";
+import Versiculo from "./Versiculo.astro";
+import BotonMusica from "./BotonMusica.astro";
+
+/*
+   Cuántos lugares reserva esta invitación. No se toca acá: lo manda la
+   página. index.astro no le pasa nada y queda en 0, o sea sin pase;
+   pase[cantidad].astro le pasa el número de la URL (/pase1, /pase2...).
+*/
+export interface Props {
+    pases?: number;
+    // Con invitado se ve su nombre en el pase y se confirma con formulario
+    invitado?: string;
+    /*
+       Conectada al panel de invitados (la usa index.astro). El pase y la
+       ventana de confirmación se dibujan escondidos y aparecen solo si el
+       link (?i=) trae un invitado que existe en la base.
+    */
+    conectado?: boolean;
+}
+const { pases = 0, invitado = "", conectado = false } = Astro.props;
+---
+
+<!-- PORTADA (cubre todo hasta que se toca para abrir) -->
+<Portada />
+
+<!-- CONTENIDO DE LA INVITACIÓN -->
+<div id="contenido-principal">
+    <Inicio />
+    <Padres />
+    <Padrinos />
+    <Fecha />
+    {(invitado || conectado || pases > 0) && (
+        <PaseInvitado invitado={invitado} pases={pases} conectado={conectado} />
+    )}
+    <Ubicacion />
+    <Vestimenta />
+    <NoNinos />
+    <Regalos />
+    <CompartirFoto />
+    <Confirmacion pases={pases} invitado={invitado} conectado={conectado} />
+    <Puntualidad />
+    <AlbumFotos />
+    <Versiculo />
+</div>
+
+<!-- El control flotante de la esquina: pausa y reanuda la melodía -->
+<BotonMusica />
+
+<style>
+    /*
+       Cada sección mide sus tamaños en cqw. Sin un contenedor por encima,
+       ese cqw se calcula contra la pantalla entera: en la computadora
+       todo se agrandaba. Con esto se mide contra la columna de 430px,
+       igual que en el celular.
+    */
+    #contenido-principal {
+        container-type: inline-size;
+    }
+</style>
+
+<script>
+    import { animarEntrada } from "../scripts/animaciones";
+
+    /*
+       La entrada de todas las secciones, en un solo lugar: lo marcado con
+       .anima aparece subiendo apenas cuando la sección asoma.
+       Quedan afuera el inicio (espera a que se abra la portada) y el pase
+       (aparece cuando contesta el panel, y se anima él solo).
+    */
+    document.addEventListener("DOMContentLoaded", () => {
+        document
+            .querySelectorAll<HTMLElement>(
+                "#contenido-principal > .inv-seccion:not(#sobre-novios, #pase-invitado)",
+            )
+            // Cada cosa con su propio disparador: en las secciones largas,
+            // lo de abajo no termina de entrar antes de que se lo vea
+            .forEach((seccion) => {
+                seccion
+                    .querySelectorAll(".anima")
+                    .forEach((el) => animarEntrada(el, el));
+            });
+    });
+</script>

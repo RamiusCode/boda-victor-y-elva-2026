@@ -1,0 +1,137 @@
+---
+// src/components/Inicio.astro - Lo primero que se ve al abrir la portada:
+// las iniciales con unas hojas, el versículo y la primera foto, que se
+// funde con el blanco. (La música la arranca la portada al abrirse.)
+// El id "sobre-novios" es a donde baja la portada al abrirse.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const inicialNovio = "V";
+const inicialNovia = "E";
+const versiculo = "El amor no pasará jamás.";
+const cita = "1 Corintios 13:8";
+const foto = "/imagenes/foto1.webp";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="sobre-novios" class="inv-seccion inicio">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-der" aria-hidden="true" />
+
+    <!-- Iniciales: una arriba a la izquierda, otra abajo a la derecha y las
+         ramita cruzando en diagonal entre las dos -->
+    <div class="monograma anima" aria-label={`${inicialNovio} y ${inicialNovia}`}>
+        <img src="/imagenes/ramita.webp" alt="" width="360" height="285" class="hojas" aria-hidden="true" />
+        <span class="letra letra-1">{inicialNovio}</span>
+        <span class="letra letra-2">{inicialNovia}</span>
+    </div>
+
+    <p class="inv-texto versiculo anima">
+        {versiculo}<br />
+        <span class="cita">{cita}</span>
+    </p>
+
+    <img src={foto} alt="Los novios" width="860" height="1290" class="inv-foto foto anima" fetchpriority="high" />
+</section>
+
+<style>
+    .inicio {
+        padding-top: 16cqw;
+        padding-bottom: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .flor-izq,
+    .flor-der {
+        top: 2cqw;
+        width: 30cqw;
+    }
+
+    .flor-izq {
+        left: -12cqw;
+    }
+
+    .flor-der {
+        right: -12cqw;
+    }
+
+    .monograma {
+        position: relative;
+        width: 32cqw;
+        height: 24cqw;
+        margin: 0 auto;
+    }
+
+    /* Las hojas detrás de las letras, entre la V y la E */
+    .hojas {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 26cqw;
+        height: auto;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .letra {
+        position: absolute;
+        z-index: 1;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 400;
+        font-size: 11cqw;
+        line-height: 1;
+        color: #2f3a2c;
+    }
+
+    .letra-1 {
+        left: 1cqw;
+        top: 0;
+    }
+
+    .letra-2 {
+        right: 1cqw;
+        bottom: 0;
+    }
+
+    .versiculo {
+        max-width: 66cqw;
+        margin: 9cqw auto 0;
+        font-size: 5cqw;
+        line-height: 1.5;
+    }
+
+    .cita {
+        display: inline-block;
+        margin-top: 3cqw;
+        font-size: 0.9em;
+    }
+
+    .foto {
+        margin-top: 6cqw;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("sobre-novios");
+        if (!seccion) return;
+
+        // ── Entrada: recién cuando se abre la portada (tapada no se ve) ──
+        const elementos = seccion.querySelectorAll(".anima");
+        gsap.set(elementos, { opacity: 0 });
+        const entrar = () => {
+            const menos = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            gsap.fromTo(
+                elementos,
+                { opacity: 0, y: menos ? 0 : 16 },
+                { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "sine.out", delay: 0.2 },
+            );
+        };
+        if ((window as any).portadaAbierta) entrar();
+        else window.addEventListener("portada-abierta", entrar, { once: true });
+    });
+</script>

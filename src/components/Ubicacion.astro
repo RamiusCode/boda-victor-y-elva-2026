@@ -1,0 +1,157 @@
+---
+// src/components/Ubicacion.astro - El lugar de la boda: un arco dorado con
+// el dibujo de la quinta y la hora debajo, un filete verde al medio y, del
+// otro lado, el nombre del lugar, la dirección y el botón al mapa.
+// Si se consigue una foto del lugar, va en `fotoLugar` y reemplaza al dibujo.
+import Mano from "./Mano.astro";
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const frase = "Con alegría te invitamos a ser parte de este día tan especial en nuestras vidas";
+const titulo = "Lugar del evento";
+const lugar = "Casa Quinta La Floresta";
+const direccion = ["Doble vía La Guardia km 11", "Santa Cruz de la Sierra"];
+const hora = "15:30 Hrs.";
+const mapa = "https://maps.app.goo.gl/Jzizyyz6NwnFp86fA";
+const fotoLugar = "/imagenes/recepcion.jpg";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion ubicacion">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+
+    <p class="inv-texto frase anima">{frase}</p>
+
+    <div class="tarjeta anima">
+        <div class="lado-foto">
+            <div class="arco">
+                {
+                    fotoLugar ? (
+                        <img src={fotoLugar} alt={lugar} loading="lazy" />
+                    ) : (
+                        <svg viewBox="0 0 120 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M22 88V50L60 26l38 24v38"></path>
+                            <path d="M14 55l46-30 46 30"></path>
+                            <path d="M50 88V68a10 10 0 0 1 20 0v20"></path>
+                            <rect x="30" y="58" width="11" height="12" rx="1"></rect>
+                            <rect x="79" y="58" width="11" height="12" rx="1"></rect>
+                            <path d="M8 88h104"></path>
+                            <circle cx="60" cy="44" r="4"></circle>
+                        </svg>
+                    )
+                }
+            </div>
+            <p class="hora">{hora}</p>
+        </div>
+
+        <span class="filete" aria-hidden="true"></span>
+
+        <div class="lado-texto">
+            <h2 class="titulo">{titulo}</h2>
+            <p class="lugar">{lugar}</p>
+            <p class="direccion">{direccion.map((d) => <span>{d}</span>)}</p>
+            <div class="inv-boton-fila boton">
+                <a class="inv-boton" href={mapa} target="_blank" rel="noopener noreferrer">Ver Ubicación</a>
+                <Mano />
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .ubicacion {
+        padding-top: 11cqw;
+    }
+
+    .flor-izq {
+        top: 0;
+        left: -12cqw;
+        width: 24cqw;
+    }
+
+    .frase {
+        max-width: 76cqw;
+        margin: 0 auto;
+        font-size: 4.6cqw;
+    }
+
+    .tarjeta {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 4cqw;
+        margin-top: 9cqw;
+    }
+
+    .arco {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1 / 0.85;
+        overflow: hidden;
+        border: 1.5px solid #d9b45b;
+        border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+        background-image: linear-gradient(180deg, #fbf8f1, #f4efe2);
+        color: var(--oro);
+    }
+
+    .arco svg {
+        width: 72%;
+        height: auto;
+    }
+
+    .arco img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hora {
+        margin: 2cqw 0 0;
+        font-weight: 700;
+        font-size: 4cqw;
+    }
+
+    .filete {
+        align-self: stretch;
+        width: 2px;
+        background-image: linear-gradient(var(--oliva), var(--oliva));
+    }
+
+    .titulo {
+        margin: 0;
+        font-weight: 700;
+        font-size: 4.4cqw;
+        line-height: 1.1;
+        text-transform: uppercase;
+        color: var(--oro);
+    }
+
+    .lugar {
+        margin: 1.5cqw 0 0;
+        font-weight: 700;
+        font-size: 3.6cqw;
+        line-height: 1.2;
+        color: #2b2b28;
+    }
+
+    .direccion {
+        margin: 1cqw 0 0;
+        font-size: 3.4cqw;
+        line-height: 1.25;
+        color: #8a8a83;
+    }
+
+    .direccion span {
+        display: block;
+    }
+
+    .boton {
+        margin-top: 3cqw;
+        margin-right: -6cqw;
+    }
+
+    .boton .inv-boton {
+        padding: 2.2cqw 4.5cqw;
+        font-size: 3.6cqw;
+        white-space: nowrap;
+    }
+</style>

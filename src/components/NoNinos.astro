@@ -1,0 +1,48 @@
+---
+// src/components/NoNinos.astro - Aviso de que la celebración es solo para
+// adultos: título dorado y el mensaje de los novios, con el mismo estilo
+// del resto de las secciones.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "No niños";
+const mensaje =
+    "Desde el respeto y el amor que les tenemos, deseamos compartirles que esta celebración, bajo la bendición de Dios, será exclusiva para adultos.";
+const gracias = "¡Agradecemos su comprensión y cariño!";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion no-ninos">
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+
+    <h2 class="inv-titulo anima">{titulo}</h2>
+
+    <p class="inv-texto mensaje anima">{mensaje}</p>
+    <p class="inv-texto gracias anima">{gracias}</p>
+</section>
+
+<style>
+    .no-ninos {
+        padding-top: 14cqw;
+        padding-bottom: 8cqw;
+    }
+
+    .flor-der {
+        bottom: -8cqw;
+        right: -8cqw;
+        width: 22cqw;
+    }
+
+    .mensaje {
+        max-width: 78cqw;
+        margin: 7cqw auto 0;
+        font-size: 4.4cqw;
+        line-height: 1.6;
+    }
+
+    .gracias {
+        max-width: 78cqw;
+        margin: 6cqw auto 0;
+        font-weight: 700;
+        font-size: 4.4cqw;
+    }
+</style>

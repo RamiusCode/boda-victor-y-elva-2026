@@ -1,0 +1,844 @@
+---
+// src/components/Confirmacion.astro
+// El cierre: la última foto, "Es muy importante que nos confirmes tu
+// asistencia" y el círculo con las iniciales, que es el botón de confirmar.
+//
+// Dos formas de confirmar:
+// - WhatsApp (lo de siempre): el invitado escribe su nombre y el círculo
+//   abre WhatsApp con el mensaje ya armado (src/scripts/mensajeConfirmar.ts).
+// - Formulario: con un invitado fijo (/muestra) o conectada al panel
+//   (index.astro con ?i=). El círculo abre una ventana donde elige cuántos
+//   van y la respuesta se guarda en el sistema. Conectada arranca con
+//   WhatsApp y cambia al formulario si el link trae un invitado válido.
+import Mano from "./Mano.astro";
+import { enlaceConfirmar } from "../scripts/mensajeConfirmar";
+import { pasesReservados } from "../scripts/frasesPase";
+
+export interface Props {
+    pases?: number;
+    invitado?: string;
+    conectado?: boolean;
+}
+const { pases = 0, invitado = "", conectado = false } = Astro.props;
+// Con formulario: un invitado fijo (muestra) o la versión conectada
+const conFormulario = Boolean(invitado) || conectado;
+// Mientras no llega el invitado de la base, la ventana lleva un número
+// de molde: el script copia ese botón uno por pase
+const pasesVentana = invitado && pases > 0 ? pases : 1;
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const foto = "/imagenes/foto3.webp";
+
+const botonConfirmar = "Confirmar asistencia";
+const importante = "Es muy importante que nos confirmes tu asistencia";
+const titulo = "Confirmación de asistencia";
+const inicialNovio = "V";
+const inicialNovia = "E";
+const aviso = "Tu confirmación nos ayuda a preparar este día con mucho cariño.";
+const placeholderNombre = "Escribe tu nombre";
+/*
+   El mensaje de WhatsApp. El número va con el código de país y sin el +
+   ni espacios, que es como lo pide wa.me.
+*/
+const datosWhatsapp = {
+    telefono: "59175552190",
+    novios: "Victor y Elva",
+    fecha: "18 de diciembre de 2026",
+};
+// Lo que se le dice al invitado después de confirmar con el formulario
+const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section id="confirmacion" class="inv-seccion confirmacion-seccion" data-te-esperamos={teEsperamos}>
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor inv-flor-espejo flor-der" aria-hidden="true" />
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor inv-flor-espejo flor-izq" aria-hidden="true" />
+
+    <img src={foto} alt="Los novios" width="860" height="1290" class="inv-foto foto anima" loading="lazy" />
+
+    <p class="inv-texto importante anima">{importante}</p>
+
+    <span class="flechas anima" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10.5"></circle>
+            <path d="M8 8.5l4 3.5 4-3.5M8 12.5l4 3.5 4-3.5"></path>
+        </svg>
+    </span>
+
+    <h2 class="inv-titulo titulo anima">{titulo}</h2>
+
+    <!-- WhatsApp: el nombre del invitado entra en el mensaje -->
+    <label class="nombre-casilla anima" data-whatsapp style={conFormulario && invitado ? "display: none" : undefined}>
+        <input
+            id="confirmar-nombre"
+            type="text"
+            name="nombre"
+            autocomplete="name"
+            placeholder={placeholderNombre}
+            aria-label="Tu nombre"
+        />
+    </label>
+
+    <!-- El logo: solo se ve, no se toca -->
+    <div class="circulo-fila anima">
+        <div class="circulo" aria-hidden="true">
+            <span class="iniciales">
+                <span>{inicialNovio}</span><i></i><span>{inicialNovia}</span>
+            </span>
+        </div>
+    </div>
+
+    <p class="inv-texto aviso anima">{aviso}</p>
+
+    <!-- El botón que confirma: WhatsApp, o la ventana si hay formulario -->
+    <div class="confirmar-fila anima">
+        <div class="inv-boton-fila">
+            <a
+                class="inv-boton"
+                id="boton-confirmar"
+                data-whatsapp
+                data-confirmar={JSON.stringify(datosWhatsapp)}
+                href={enlaceConfirmar(datosWhatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={conFormulario && invitado ? "display: none" : undefined}
+            >
+                {botonConfirmar}
+            </a>
+            {
+                conFormulario && (
+                    <button
+                        type="button"
+                        class="inv-boton"
+                        id="abrir-confirmacion"
+                        style={invitado ? undefined : "display: none"}
+                    >
+                        {botonConfirmar}
+                    </button>
+                )
+            }
+            <Mano />
+        </div>
+    </div>
+
+    {
+        conFormulario && (
+            <dialog
+                class="ventana"
+                id="ventana-confirmacion"
+                data-pases={pasesVentana}
+                data-conectado={conectado ? "" : undefined}
+            >
+                <button type="button" class="c-cerrar" aria-label="Cerrar">×</button>
+
+                <!-- Paso 1: el formulario -->
+                <form class="c-paso c-formulario" method="dialog">
+                    <p class="c-titulo">Confirmación de asistencia</p>
+                    <p class="c-nombre inv-nombres">{invitado}</p>
+                    <span class="c-filete" aria-hidden="true"><i></i></span>
+                    <p class="c-reservado">
+                        Tienes <strong>{pasesVentana}</strong> <span class="c-palabra">{pasesReservados(pasesVentana)}</span>.
+                    </p>
+
+                    <p class="c-pregunta">¿Cuántos asistirán?</p>
+                    <div class="c-cantidades" role="radiogroup" aria-label="Cuántos asistirán">
+                        {
+                            Array.from({ length: pasesVentana }).map((_, i) => (
+                                <label class="c-cantidad">
+                                    <input
+                                        type="radio"
+                                        name="asistentes"
+                                        value={i + 1}
+                                        checked={i + 1 === pasesVentana}
+                                    />
+                                    <span>{i + 1}</span>
+                                </label>
+                            ))
+                        }
+                    </div>
+
+                    <button type="submit" class="inv-boton c-confirmar" value="si">
+                        <span class="boton-texto">Confirmar asistencia</span>
+                    </button>
+                    <button type="submit" class="c-no" value="no">No podré asistir</button>
+                </form>
+
+                <!-- Paso 2: la respuesta -->
+                <div class="c-paso c-gracias" hidden>
+                    <div class="c-icono" aria-hidden="true">✓</div>
+                    <p class="c-titulo">¡Muchas gracias!</p>
+                    <p class="c-nombre inv-nombres">{invitado}</p>
+                    <p class="c-reservado c-respuesta"></p>
+                    <p class="c-detalle"></p>
+                    <button type="button" class="c-no c-cambiar">Cambiar mi respuesta</button>
+                </div>
+            </dialog>
+        )
+    }
+</section>
+
+<style>
+    .confirmacion-seccion {
+        padding-top: 4cqw;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 22cqw;
+    }
+
+    .confirmacion-seccion > :not(.inv-flor, .foto, dialog) {
+        margin-left: 8cqw;
+        margin-right: 8cqw;
+    }
+
+    .flor-der {
+        top: 150cqw;
+        right: -10cqw;
+        width: 24cqw;
+    }
+
+    .flor-izq {
+        top: 205cqw;
+        left: -5cqw;
+        width: 20cqw;
+    }
+
+    .importante {
+        margin-top: 8cqw;
+        font-size: 4.2cqw;
+        line-height: 1.2;
+    }
+
+    .flechas {
+        display: block;
+        width: 9cqw;
+        height: 9cqw;
+        margin: 5cqw auto 0 !important;
+        color: var(--oro);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .flechas {
+            animation: bajar 1.8s ease-in-out infinite;
+        }
+    }
+
+    @keyframes bajar {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(1.5cqw); }
+    }
+
+    .titulo {
+        margin-top: 18cqw;
+    }
+
+    /* ── Botón "Confirmar asistencia" ───────────────────────── */
+    .confirmar-fila {
+        margin-top: 9cqw;
+    }
+
+    /* El botón queda centrado solo; la manito va afuera, a su derecha */
+    .confirmar-fila :global(.inv-boton-fila) {
+        position: relative;
+    }
+
+    .confirmar-fila :global(.inv-mano) {
+        position: absolute;
+        left: calc(100% + 1cqw);
+        top: 4cqw;
+        margin-top: 0;
+    }
+
+    /* ── Casilla del nombre (solo con WhatsApp) ─────────────── */
+    .nombre-casilla {
+        display: block;
+        max-width: 66cqw;
+        margin: 7cqw auto 0 !important;
+    }
+
+    .nombre-casilla input {
+        width: 100%;
+        padding: 2cqw 1cqw;
+        border: 0;
+        border-bottom: 1px solid #c9c9c4;
+        background: transparent;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        font-size: 4.2cqw;
+        text-align: center;
+        color: var(--texto);
+        outline: none;
+    }
+
+    .nombre-casilla input::placeholder {
+        color: #a3a39c;
+    }
+
+    .nombre-casilla input:focus {
+        border-bottom-color: var(--oro);
+    }
+
+    .nombre-casilla.falta input {
+        border-bottom-color: #c0573d;
+    }
+
+    .nombre-casilla.falta input::placeholder {
+        color: #c0573d;
+    }
+
+    /* ── El círculo con las iniciales ───────────────────────── */
+    .circulo-fila {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        margin-top: 6cqw;
+    }
+
+    .circulo {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 60cqw;
+        height: 60cqw;
+        margin: 0 auto;
+        padding: 0;
+        border: 1px solid #8f8f86;
+        border-radius: 50%;
+        background-image: linear-gradient(#fff, #fff);
+        color: #111;
+    }
+
+    .iniciales {
+        display: flex;
+        align-items: center;
+        gap: 3cqw;
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 500;
+        font-size: 22cqw;
+        line-height: 1;
+    }
+
+    .iniciales i {
+        width: 1px;
+        height: 22cqw;
+        background-image: linear-gradient(#111, #111);
+    }
+
+    .aviso {
+        margin-top: 7cqw;
+        font-size: 4.2cqw;
+    }
+
+    /* ── Ventana de confirmación ────────────────────────────── */
+    .ventana {
+        container-type: inline-size;
+        width: min(88vw, 400px);
+        max-height: 92vh;
+        /* Centrada en la pantalla: el reset de Tailwind le saca el margen */
+        margin: auto;
+        padding: 0;
+        border: 0;
+        border-radius: 22px;
+        overflow: auto;
+        text-align: center;
+        color: var(--texto);
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        background-image: linear-gradient(#fff, #fff);
+        box-shadow:
+            inset 0 0 0 6px #fff,
+            inset 0 0 0 7px rgba(195, 146, 47, 0.5),
+            0 20px 50px rgba(30, 35, 25, 0.35);
+    }
+
+    .ventana::backdrop {
+        background: rgba(40, 45, 35, 0.5);
+        backdrop-filter: blur(3px);
+    }
+
+    .ventana[open] {
+        animation: aparecer 0.45s cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+
+    @keyframes aparecer {
+        from {
+            opacity: 0;
+            transform: translateY(24px) scale(0.96);
+        }
+    }
+
+    .c-cerrar {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        z-index: 1;
+        padding: 4px 8px;
+        border: 0;
+        background: none;
+        font-size: 26px;
+        line-height: 1;
+        color: #9a9a92;
+        cursor: pointer;
+    }
+
+    .c-paso {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10cqw 7cqw 8cqw;
+    }
+
+    .c-paso[hidden] {
+        display: none;
+    }
+
+    .c-titulo {
+        margin: 0;
+        font-size: 3.8cqw;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--oro);
+    }
+
+    .c-nombre {
+        margin: 7cqw 0 0;
+        font-size: 7cqw;
+        line-height: 1.35;
+    }
+
+    /* Filete dorado con un rombito, como el de la cuenta regresiva */
+    .c-filete {
+        position: relative;
+        display: block;
+        width: 70%;
+        height: 2cqw;
+        margin-top: 5cqw;
+    }
+
+    .c-filete::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 1px;
+        background-image: linear-gradient(90deg, transparent, var(--oro) 20%, var(--oro) 80%, transparent);
+    }
+
+    .c-filete i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1.6cqw;
+        height: 1.6cqw;
+        border: 1px solid var(--oro);
+        background-image: linear-gradient(#fff, #fff);
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .c-reservado {
+        margin: 5cqw 0 0;
+        font-size: 4.8cqw;
+        line-height: 1.3;
+    }
+
+    .c-reservado strong {
+        font-weight: 700;
+        color: var(--oro-oscuro);
+    }
+
+    /* "¿Cuántos asistirán?" y los circulitos: escondidos a pedido. Siguen en
+       el código porque el script los usa; sin tocar nada, confirman todos
+       los pases reservados. */
+    .c-pregunta,
+    .c-cantidades {
+        display: none !important;
+    }
+
+    .c-pregunta {
+        margin: 6cqw 0 0;
+        font-weight: 600;
+        font-size: 4cqw;
+    }
+
+    .c-cantidades {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3cqw;
+        margin-top: 3cqw;
+    }
+
+    .c-cantidad input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .c-cantidad span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 12cqw;
+        height: 12cqw;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 5cqw;
+        color: var(--oliva);
+        cursor: pointer;
+        background-image: linear-gradient(#fff, #fff);
+        box-shadow: inset 0 0 0 1.5px rgba(138, 150, 114, 0.6);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    }
+
+    /* La elegida, en verde oliva */
+    .c-cantidad input:checked + span {
+        color: #fff;
+        background-image: linear-gradient(var(--oliva), var(--oliva));
+        box-shadow: 0 4px 10px rgba(70, 85, 50, 0.3);
+        transform: scale(1.08);
+    }
+
+    .c-cantidad input:focus-visible + span {
+        outline: 2px solid var(--oro);
+        outline-offset: 3px;
+    }
+
+    .c-confirmar {
+        width: 100%;
+        margin-top: 7cqw;
+        padding: 4.4cqw;
+        font-size: 4.4cqw;
+    }
+
+    .c-no {
+        margin-top: 5cqw;
+        padding: 0 0 2px;
+        border: 0;
+        border-bottom: 1px solid currentColor;
+        background: none;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        font-size: 4cqw;
+        color: var(--verde-gris);
+        cursor: pointer;
+    }
+
+    .c-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 15cqw;
+        height: 15cqw;
+        margin-bottom: 4cqw;
+        border-radius: 50%;
+        font-size: 7cqw;
+        color: #fff;
+        background-image: linear-gradient(var(--oliva), var(--oliva));
+        box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--oro);
+    }
+
+    .c-detalle {
+        margin: 3cqw 0 0;
+        font-size: 4.2cqw;
+        line-height: 1.4;
+        color: #6b6b63;
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import {
+        enlaceConfirmar,
+        type DatosConfirmar,
+    } from "../scripts/mensajeConfirmar";
+    import { asistiran, pasesReservados } from "../scripts/frasesPase";
+    import {
+        datosInvitado,
+        confirmarAsistencia,
+        alCambiarInvitado,
+        type Invitado,
+    } from "../lib/invitado";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    /*
+       La ventana de confirmación.
+       - En /muestra (invitado fijo) es solo el diseño: la respuesta no se
+         manda a ningún lado, solo se muestra el agradecimiento.
+       - Conectada (index.astro con ?i=): se llena con el invitado que manda
+         la base y la respuesta se guarda en el sistema. Si el link no trae
+         un invitado válido, queda la confirmación por WhatsApp de siempre.
+    */
+    document.addEventListener("DOMContentLoaded", () => {
+        const ventana = document.getElementById(
+            "ventana-confirmacion",
+        ) as HTMLDialogElement | null;
+        const abrir = document.getElementById("abrir-confirmacion");
+        if (!ventana || !abrir) return;
+
+        const teEsperamos =
+            document.getElementById("confirmacion")?.dataset.teEsperamos ?? "";
+        const conectada = ventana.hasAttribute("data-conectado");
+        const formulario = ventana.querySelector<HTMLFormElement>(".c-formulario")!;
+        const gracias = ventana.querySelector<HTMLElement>(".c-gracias")!;
+        const respuesta = ventana.querySelector<HTMLElement>(".c-respuesta")!;
+        const detalle = ventana.querySelector<HTMLElement>(".c-detalle")!;
+        const tituloGracias = gracias.querySelector<HTMLElement>(".c-titulo");
+        const iconoGracias = gracias.querySelector<HTMLElement>(".c-icono");
+        const textoTituloGracias = tituloGracias?.textContent ?? "";
+        const pregunta = ventana.querySelector<HTMLElement>(".c-pregunta");
+        const cantidades = ventana.querySelector<HTMLElement>(".c-cantidades");
+        const confirmar = formulario.querySelector<HTMLButtonElement>(".c-confirmar");
+        const textoConfirmar = confirmar?.querySelector<HTMLElement>(".boton-texto");
+        const textoBotonConfirmar = textoConfirmar?.textContent ?? "";
+        const envios = formulario.querySelectorAll<HTMLButtonElement>(
+            'button[type="submit"]',
+        );
+
+        let pases = Number(ventana.dataset.pases) || 1;
+        // En la muestra se elige como en el diseño. Conectada, lo decide el
+        // panel: solo con la función `cantidad` prendida.
+        let eligeCantidad = true;
+        // Mientras el invitado no toque los números, la cantidad sigue a los
+        // pases: si los novios corrigen de 4 a 5, confirma 5.
+        let eligioAMano = false;
+
+        const mostrar = (paso: "formulario" | "gracias") => {
+            formulario.hidden = paso !== "formulario";
+            gracias.hidden = paso !== "gracias";
+        };
+
+        function agradecer(viene: boolean, cantidad: number) {
+            if (tituloGracias) tituloGracias.textContent = textoTituloGracias;
+            if (iconoGracias) iconoGracias.style.display = "";
+            if (viene) {
+                respuesta.textContent = `${asistiran(cantidad)}.`;
+                detalle.textContent = teEsperamos;
+            } else {
+                respuesta.textContent = "Lamentamos que no puedas acompañarnos.";
+                detalle.textContent =
+                    "Gracias por avisarnos. Te llevamos en el corazón ese día.";
+            }
+            mostrar("gracias");
+        }
+
+        // La base no contestó: se avisa en vez de agradecer, para que el
+        // invitado no crea que quedó confirmado
+        function avisarFallo() {
+            if (tituloGracias) tituloGracias.textContent = "No se pudo enviar";
+            if (iconoGracias) iconoGracias.style.display = "none";
+            respuesta.textContent = "No pudimos guardar tu respuesta.";
+            detalle.textContent =
+                "Revisa tu conexión e inténtalo de nuevo en un momento.";
+            mostrar("gracias");
+        }
+
+        // Cuántos van a ir según lo marcado, dentro de los pases
+        function elegida(): number {
+            if (!eligeCantidad) return pases;
+            const marcada = Number(new FormData(formulario).get("asistentes"));
+            if (!Number.isInteger(marcada) || marcada < 1) return pases;
+            return Math.min(marcada, pases);
+        }
+
+        // Un botón por pase. Se copia el que ya está dibujado para que
+        // conserve los estilos del componente.
+        function pintarCantidades(marcada: number) {
+            if (!cantidades) return;
+            const molde = cantidades.querySelector(".c-cantidad");
+            if (!molde) return;
+
+            if (cantidades.querySelectorAll(".c-cantidad").length !== pases) {
+                const nuevos = Array.from({ length: pases }, (_, i) => {
+                    const copia = molde.cloneNode(true) as HTMLElement;
+                    const radio = copia.querySelector("input")!;
+                    radio.value = String(i + 1);
+                    radio.removeAttribute("checked");
+                    const numero = copia.querySelector("span");
+                    if (numero) numero.textContent = String(i + 1);
+                    return copia;
+                });
+                cantidades.replaceChildren(...nuevos);
+            }
+
+            cantidades
+                .querySelectorAll<HTMLInputElement>('input[name="asistentes"]')
+                .forEach((r) => (r.checked = Number(r.value) === marcada));
+        }
+
+        cantidades?.addEventListener("change", () => (eligioAMano = true));
+
+        function llenar(inv: Invitado, primeraVez: boolean) {
+            const anterior = elegida();
+            if (Number.isInteger(inv.pases) && inv.pases > 0) pases = inv.pases;
+            ventana!.dataset.pases = String(pases);
+
+            ventana!
+                .querySelectorAll(".c-nombre")
+                .forEach((el) => (el.textContent = inv.nombre));
+            const numero = ventana!.querySelector(".c-reservado:not(.c-respuesta) strong");
+            const palabra = ventana!.querySelector(".c-palabra");
+            if (numero) numero.textContent = String(pases);
+            if (palabra) palabra.textContent = pasesReservados(pases);
+
+            // Se compara con === true: las bodas que no tienen la clave
+            // confirman con todos sus pases, como antes
+            eligeCantidad =
+                (inv.funciones as { cantidad?: boolean } | undefined)?.cantidad ===
+                true;
+            for (const el of [pregunta, cantidades]) {
+                if (el) el.style.display = eligeCantidad ? "" : "none";
+            }
+
+            let marcada: number;
+            if (primeraVez && inv.asisten && inv.asisten > 0) {
+                // Lo que ya había respondido
+                marcada = Math.min(inv.asisten, pases);
+                eligioAMano = true;
+            } else {
+                marcada = eligioAMano ? Math.min(anterior, pases) : pases;
+            }
+            pintarCantidades(marcada);
+
+            // Si ya respondió, se le muestra su respuesta en vez del
+            // formulario. Con la ventana abierta no se le cambia el paso
+            // en la cara.
+            if (ventana!.open) return;
+            if (inv.confirmado === true) {
+                agradecer(true, inv.asisten && inv.asisten > 0 ? inv.asisten : pases);
+            } else if (inv.confirmado === false) {
+                agradecer(false, 0);
+            } else {
+                mostrar("formulario");
+            }
+        }
+
+        // Cuál de las dos formas de confirmar se ve
+        let conFormulario = !conectada;
+        function usarFormulario(si: boolean) {
+            if (si === conFormulario) return;
+            conFormulario = si;
+            document
+                .querySelectorAll<HTMLElement>("#confirmacion [data-whatsapp]")
+                .forEach((el) => (el.style.display = si ? "none" : ""));
+            abrir!.style.display = si ? "" : "none";
+            if (!si && ventana!.open) ventana!.close();
+            ScrollTrigger.refresh();
+        }
+
+        function alLlegar(inv: Invitado | null, primeraVez: boolean) {
+            // Sin invitado (sin ?i=, borrado o sin conexión) queda como está
+            if (!inv) return;
+
+            // Boda sin la confirmación contratada: se queda con WhatsApp, con
+            // el nombre del invitado ya escrito
+            if (inv.funciones && inv.funciones.confirmacion === false) {
+                usarFormulario(false);
+                const casilla = document.getElementById(
+                    "confirmar-nombre",
+                ) as HTMLInputElement | null;
+                if (casilla && !casilla.value.trim() && inv.nombre) {
+                    casilla.value = inv.nombre;
+                    casilla.dispatchEvent(new Event("input"));
+                }
+                return;
+            }
+
+            llenar(inv, primeraVez);
+            usarFormulario(true);
+        }
+
+        if (conectada) {
+            datosInvitado().then((inv) => alLlegar(inv, true));
+            alCambiarInvitado((inv) => alLlegar(inv, false));
+        }
+
+        abrir.addEventListener("click", () => {
+            if (!ventana.open) ventana.showModal();
+        });
+        ventana
+            .querySelector(".c-cerrar")!
+            .addEventListener("click", () => ventana.close());
+        // Tocar afuera de la ventana la cierra
+        ventana.addEventListener("click", (e) => {
+            if (e.target === ventana) ventana.close();
+        });
+
+        let enviando = false;
+        formulario.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (enviando) return;
+            const viene =
+                (e.submitter as HTMLButtonElement | null)?.value !== "no";
+            const cantidad = elegida();
+
+            // La muestra no guarda nada
+            if (!conectada) {
+                agradecer(viene, cantidad);
+                return;
+            }
+
+            enviando = true;
+            envios.forEach((b) => (b.disabled = true));
+            if (viene && textoConfirmar) textoConfirmar.textContent = "Enviando...";
+
+            // Nunca lanza: si falla devuelve null
+            const fila = viene
+                ? await confirmarAsistencia(true, cantidad)
+                : await confirmarAsistencia(false);
+
+            enviando = false;
+            envios.forEach((b) => (b.disabled = false));
+            if (textoConfirmar) textoConfirmar.textContent = textoBotonConfirmar;
+
+            if (!fila) {
+                avisarFallo();
+                return;
+            }
+            agradecer(
+                viene,
+                viene && fila.asisten && fila.asisten > 0 ? fila.asisten : cantidad,
+            );
+        });
+
+        ventana
+            .querySelector(".c-cambiar")!
+            .addEventListener("click", () => mostrar("formulario"));
+    });
+
+    // El nombre del invitado entra en el mensaje de WhatsApp. Va aparte de
+    // las animaciones: tiene que andar aunque se pida menos movimiento.
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById(
+            "confirmar-nombre",
+        ) as HTMLInputElement | null;
+        const circulo = document.querySelector<HTMLAnchorElement>(
+            "#boton-confirmar",
+        );
+        if (!input || !circulo) return;
+
+        const casilla = input.closest(".nombre-casilla");
+        const datos: DatosConfirmar = JSON.parse(circulo.dataset.confirmar!);
+
+        input.addEventListener("input", () => {
+            circulo.href = enlaceConfirmar(datos, input.value);
+            if (input.value.trim()) casilla?.classList.remove("falta");
+        });
+
+        // Sin nombre no sale: se marca la casilla y se lo pide
+        circulo.addEventListener("click", (e) => {
+            if (input.value.trim()) return;
+            e.preventDefault();
+            casilla?.classList.add("falta");
+            input.focus();
+            gsap.fromTo(
+                casilla,
+                { x: -6 },
+                { x: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" },
+            );
+        });
+    });
+</script>

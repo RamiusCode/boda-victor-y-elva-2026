@@ -1,0 +1,12 @@
+---
+// src/pages/muestra.astro
+// Muestra para el cliente: cómo se ve la invitación con el nombre del
+// invitado, sus pases y la confirmación con formulario. Datos ficticios,
+// todavía sin conectar a ningún sistema.
+import Layout from "../layouts/Layout.astro";
+import Invitacion from "../components/Invitacion.astro";
+---
+
+<Layout title="Victor & Elva | 18 de Diciembre 2026">
+    <Invitacion invitado="Familia Gutiérrez Rojas" pases={4} />
+</Layout>

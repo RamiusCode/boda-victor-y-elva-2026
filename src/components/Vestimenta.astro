@@ -1,0 +1,96 @@
+---
+// src/components/Vestimenta.astro - El código de vestimenta: título dorado,
+// un círculo fino con el traje y el vestido animados (dorados), y la aclaración.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Código de vestimenta";
+const codigo = "Formal de día";
+const detalle = "Caballeros con traje, damas con vestido largo";
+const aclaracion = "(Los colores blanco, beige y amarillo están reservados para las damitas)";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion vestimenta">
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+
+    <h2 class="inv-titulo anima">{titulo}</h2>
+
+    <div class="circulo anima" aria-hidden="true">
+        <img src="/imagenes/traje.webp" alt="" width="180" height="180" class="icono" />
+        <img src="/imagenes/vestido.webp" alt="" width="200" height="200" class="icono" />
+    </div>
+
+    <p class="inv-texto codigo anima">{codigo}</p>
+    <p class="inv-texto detalle anima">{detalle}</p>
+    <p class="inv-texto aclaracion anima">{aclaracion}</p>
+</section>
+
+<style>
+    .vestimenta {
+        padding-top: 16cqw;
+    }
+
+    .flor-der {
+        top: 50cqw;
+        right: -8cqw;
+        width: 20cqw;
+    }
+
+    .flor-izq {
+        bottom: -6cqw;
+        left: -12cqw;
+        width: 22cqw;
+    }
+
+    /* Título más chico que el de las otras secciones */
+    .vestimenta .inv-titulo {
+        font-size: 5.8cqw;
+    }
+
+    .circulo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2cqw;
+        width: 66cqw;
+        height: 66cqw;
+        margin: 8cqw auto 0;
+        border: 1px solid #e3c47a;
+        border-radius: 50%;
+        color: #c98f3c;
+    }
+
+    .icono {
+        width: 27cqw;
+        height: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* Como la referencia: el código en mayúsculas, más grande y liviano;
+       la aclaración debajo, en negrita y entre paréntesis */
+    .codigo {
+        margin-top: 8cqw;
+        font-weight: 500;
+        font-size: 6.4cqw;
+        text-transform: uppercase;
+        color: var(--texto);
+    }
+
+    .detalle {
+        max-width: 78cqw;
+        margin: 3cqw auto 0;
+        font-style: italic;
+        font-size: 4.8cqw;
+        line-height: 1.5;
+    }
+
+    .aclaracion {
+        max-width: 78cqw;
+        margin: 3cqw auto 0;
+        font-weight: 700;
+        font-size: 4.4cqw;
+        line-height: 1.5;
+    }
+</style>

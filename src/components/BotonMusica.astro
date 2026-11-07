@@ -1,0 +1,185 @@
+---
+// src/components/BotonMusica.astro
+// Botón flotante abajo a la derecha para pausar y reanudar la melodía.
+// Controla el mismo audio que arranca la portada al tocar la tapa
+// (window.audioGlobal), así que nunca hay dos melodías sonando.
+//
+// Aparece recién cuando esa melodía existe: antes de abrir la invitación
+// no hay nada que pausar, y un botón que no hace nada confunde.
+---
+
+<button
+    id="boton-musica"
+    type="button"
+    aria-label="Pausar o reanudar la música"
+    class="boton-musica"
+>
+    <!--
+       El icono anuncia lo que pasa al tocarlo, no el estado actual:
+       la nota limpia significa "está en pausa, tocá para reanudar".
+    -->
+    <svg
+        id="icono-nota"
+        class="nota oculto"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M9 18V6.5l10-2v11"></path>
+        <circle cx="6.5" cy="18" r="2.5"></circle>
+        <circle cx="16.5" cy="15.5" r="2.5"></circle>
+    </svg>
+
+    <!-- Nota tachada: está sonando, tocá para silenciar. -->
+    <svg
+        id="icono-nota-tachada"
+        class="nota"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M9 18V6.5l10-2v11"></path>
+        <circle cx="6.5" cy="18" r="2.5"></circle>
+        <circle cx="16.5" cy="15.5" r="2.5"></circle>
+        <path d="M3 3l18 18"></path>
+    </svg>
+</button>
+
+<style>
+    /*
+       Los mismos colores que el resto de la invitación: guindo con brillo,
+       filete dorado y la nota en crema.
+
+       El guindo va escrito como degradado y no como
+       background-color a propósito: el modo oscuro forzado de algunos
+       celulares recalcula los colores pero respeta las imágenes, y un
+       degradado cuenta como imagen. Así el botón se ve igual en todos.
+    */
+    .boton-musica {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        /*
+           Por encima de todo, incluida la portada (z 8500): la melodía
+           tiene que poder cortarse aunque la tapa siga en pantalla.
+        */
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(214, 182, 120, 0.9);
+        background-image: radial-gradient(
+            circle at 35% 30%,
+            #85905e 0%,
+            #6f7a4a 55%,
+            #525c37 100%
+        );
+        color: #f6efe1;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        /* El dedo lo aprieta entero, también en el filo */
+        touch-action: manipulation;
+        box-shadow: 0 4px 12px rgba(111, 122, 74, 0.38);
+        /* Escondido hasta que haya melodía que controlar */
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.8);
+        transition:
+            opacity 0.35s ease,
+            transform 0.35s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .boton-musica.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+    }
+
+    .boton-musica:active {
+        transform: scale(0.92);
+        box-shadow: 0 2px 6px rgba(111, 122, 74, 0.4);
+    }
+
+    @media (hover: hover) {
+        .boton-musica:hover {
+            box-shadow: 0 6px 16px rgba(111, 122, 74, 0.45);
+        }
+    }
+
+    .boton-musica:focus-visible {
+        outline: 2px solid #f6efe1;
+        outline-offset: 3px;
+    }
+
+    .nota {
+        width: 21px;
+        height: 21px;
+    }
+
+    .oculto {
+        display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .boton-musica {
+            transition: opacity 0.35s ease;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const boton = document.getElementById("boton-musica");
+        const iconoNota = document.getElementById("icono-nota");
+        const iconoTachado = document.getElementById("icono-nota-tachada");
+        if (!boton) return;
+
+        // Mientras suena se muestra la nota tachada (tocá para silenciar) y
+        // en pausa la nota limpia (tocá para reanudar).
+        const pintarEstado = (sonando: boolean) => {
+            iconoTachado?.classList.toggle("oculto", !sonando);
+            iconoNota?.classList.toggle("oculto", sonando);
+        };
+
+        /*
+           La melodía la crea la portada cuando tocan la tapa, así que acá
+           hay que esperarla. Se mira cada 200 ms y se deja de mirar apenas
+           aparece: sin ese corte, el intervalo seguiría corriendo toda la
+           visita para nada.
+        */
+        const esperar = setInterval(() => {
+            const audio = (window as any).audioGlobal as
+                | HTMLAudioElement
+                | undefined;
+            if (!audio) return;
+            clearInterval(esperar);
+
+            boton.classList.add("visible");
+            pintarEstado(!audio.paused);
+
+            // El estado se pinta escuchando al audio y no al click: así
+            // queda bien aunque la melodía se corte por otro lado.
+            audio.addEventListener("play", () => pintarEstado(true));
+            audio.addEventListener("pause", () => pintarEstado(false));
+
+            boton.addEventListener("click", () => {
+                if (audio.paused) audio.play().catch(() => {});
+                else audio.pause();
+                (window as any).estaReproduciendoGlobal = !audio.paused;
+            });
+        }, 200);
+    });
+</script>
