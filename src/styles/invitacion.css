@@ -10,17 +10,22 @@
 */
 
 :root {
-    --oro: #c3922f;
-    --oro-oscuro: #ad7f27;
-    --oliva: #8a9672;
-    --verde-gris: #7c897b;
-    --linea: #2f4a3e;
-    --texto: #3a3a36;
+    --oro: #be9e37;
+    --oro-oscuro: #a38a2c;
+    --oliva: #5b6e53;
+    --verde-gris: #5b6e53;
+    --linea: #5b6e53;
+    --texto: #5b6e53;
+    /* Paleta "Butter Yellow": mantequilla, crema y verde oscuro */
+    --mantequilla: #f7e7a1;
+    --crema: #f3eadc;
+    --verde: #5b6e53;
+    --oro-suave: #d8bf63;
 }
 
 #contenido-principal {
-    /* El blanco va como imagen: el modo oscuro forzado no lo oscurece */
-    background-image: linear-gradient(#ffffff, #ffffff);
+    /* El fondo crema va como imagen: el modo oscuro forzado no lo oscurece */
+    background-image: linear-gradient(#f3eadc, #f3eadc);
     color: var(--texto);
     font-family: "Quicksand", sans-serif;
     font-weight: 500;
@@ -120,15 +125,15 @@
     -webkit-mask-image: linear-gradient(
         180deg,
         transparent 0%,
-        #000 14%,
-        #000 80%,
+        #5b6e53 14%,
+        #5b6e53 80%,
         transparent 100%
     );
     mask-image: linear-gradient(
         180deg,
         transparent 0%,
-        #000 14%,
-        #000 80%,
+        #5b6e53 14%,
+        #5b6e53 80%,
         transparent 100%
     );
 }
@@ -150,13 +155,13 @@
     /* La forma de hoja: más redonda en dos esquinas opuestas */
     border-radius: 7cqw 2cqw 7cqw 2cqw;
     background-image: linear-gradient(var(--oro-oscuro), var(--oro-oscuro));
-    color: #fff;
+    color: var(--crema);
     font-family: "Quicksand", sans-serif;
     font-weight: 600;
     font-size: 4cqw;
     text-decoration: none;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(120, 85, 20, 0.18);
+    box-shadow: 0 3px 8px rgba(163, 138, 44, 0.25);
     transition: transform 0.2s ease;
 }
 
@@ -170,7 +175,7 @@
     background-color: transparent;
     color: var(--texto);
     font-weight: 500;
-    border: 1px solid #c9c9c4;
+    border: 1px solid #5b6e53;
     border-radius: 1.2cqw;
     box-shadow: none;
     padding: 2cqw 4cqw;

@@ -1,0 +1,137 @@
+---
+// src/components/Itinerario.astro - El itinerario del día: una línea verde
+// al medio con un punto por actividad, y a los costados, alternando, el
+// ícono animado (dorado) y la hora con la actividad.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const titulo = "Itinerario";
+const actividades = [
+    { hora: "16:00 Hrs.", actividad: "Boda Religiosa", icono: "/imagenes/it-iglesia.webp" },
+    { hora: "18:30 Hrs.", actividad: "Mariachis", icono: "/imagenes/it-musica.webp" },
+    { hora: "19:30 Hrs.", actividad: "Brindis", icono: "/imagenes/it-brindis.webp" },
+    { hora: "20:30 Hrs.", actividad: "Cena y Concurso", icono: "/imagenes/it-cena.webp" },
+    { hora: "22:30 Hrs.", actividad: "Lanzamiento del Bouquet", icono: "/imagenes/it-bouquet.webp" },
+    { hora: "23:00 Hrs.", actividad: "Corte de Torta", icono: "/imagenes/it-torta.webp" },
+];
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion itinerario">
+    <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="inv-flor flor-izq" aria-hidden="true" />
+    <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="inv-flor flor-der" aria-hidden="true" />
+
+    <h2 class="inv-titulo anima">{titulo}</h2>
+
+    <ol class="linea">
+        {
+            actividades.map((a, i) => (
+                <li class={`paso anima ${i % 2 === 0 ? "icono-izq" : "icono-der"}`}>
+                    <img src={a.icono} alt="" width="170" height="170" class="icono" aria-hidden="true" loading="lazy" />
+                    <span class="punto" aria-hidden="true"></span>
+                    <div class="texto">
+                        <p class="hora">{a.hora}</p>
+                        <p class="actividad">{a.actividad}</p>
+                    </div>
+                </li>
+            ))
+        }
+    </ol>
+</section>
+
+<style>
+    .itinerario {
+        padding-top: 14cqw;
+        padding-bottom: 14cqw;
+    }
+
+    .flor-izq {
+        top: 30cqw;
+        left: -14cqw;
+        width: 24cqw;
+    }
+
+    .flor-der {
+        bottom: 10cqw;
+        right: -8cqw;
+        width: 20cqw;
+    }
+
+    /* La línea verde que baja por el medio */
+    .linea {
+        position: relative;
+        margin: 9cqw 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .linea::before {
+        content: "";
+        position: absolute;
+        top: 8cqw;
+        bottom: 8cqw;
+        left: 50%;
+        width: 1.5px;
+        transform: translateX(-50%);
+        background-image: linear-gradient(var(--verde), var(--verde));
+    }
+
+    /* Cada paso: tres columnas (izquierda | punto | derecha) */
+    .paso {
+        display: grid;
+        grid-template-columns: 1fr 6cqw 1fr;
+        align-items: center;
+        min-height: 26cqw;
+    }
+
+    .punto {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: center;
+        width: 2.6cqw;
+        height: 2.6cqw;
+        border-radius: 50%;
+        background-image: linear-gradient(var(--verde), var(--verde));
+        box-shadow: 0 0 0 1.2cqw var(--crema);
+    }
+
+    .icono {
+        grid-row: 1;
+        justify-self: center;
+        width: 20cqw;
+        height: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .texto {
+        grid-row: 1;
+        justify-self: center;
+        text-align: center;
+    }
+
+    /* Se alternan: ícono a la izquierda y texto a la derecha, y al revés */
+    .icono-izq .icono,
+    .icono-der .texto {
+        grid-column: 1;
+    }
+
+    .icono-izq .texto,
+    .icono-der .icono {
+        grid-column: 3;
+    }
+
+    .hora {
+        margin: 0;
+        font-weight: 600;
+        font-size: 5.2cqw;
+        color: var(--verde);
+    }
+
+    .actividad {
+        max-width: 30cqw;
+        margin: 1cqw auto 0;
+        font-size: 3.6cqw;
+        line-height: 1.25;
+        color: var(--verde);
+    }
+</style>

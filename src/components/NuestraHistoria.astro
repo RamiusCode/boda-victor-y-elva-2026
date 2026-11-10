@@ -1,0 +1,329 @@
+---
+// src/components/NuestraHistoria.astro - "Nuestra historia": un video
+// horizontal dentro de un marco tipo foto instantánea, sobre fondo verde.
+// El video arranca solo y sin sonido cuando aparece en pantalla, se repite,
+// y se pausa cuando sale. Tocándolo se pausa o sigue; abajo tiene una línea
+// de tiempo para adelantar o retroceder.
+
+// ── DATOS EDITABLES ───────────────────────────────────────────
+const antetitulo = "Un pedacito de nosotros";
+const titulo = "Nuestra historia";
+const video = "/imagenes/video.mp4";
+const novios = "Victor & Elva";
+const frase =
+    "El amor es un regalo de Dios, y hoy celebramos la bendición de compartirlo el uno con el otro para siempre.";
+// ──────────────────────────────────────────────────────────────
+---
+
+<section class="inv-seccion historia" id="nuestra-historia">
+    <p class="antetitulo anima">{antetitulo}</p>
+    <h2 class="inv-nombres titulo anima">{titulo}</h2>
+    <span class="adorno anima" aria-hidden="true">
+        <i></i><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.7-9.7-9A5.4 5.4 0 0 1 12 6.3 5.4 5.4 0 0 1 21.7 12c-2.2 4.3-9.7 9-9.7 9z"></path></svg><i></i>
+    </span>
+
+    <div class="marco-zona anima">
+        <img src="/imagenes/flor-esquina.webp" alt="" width="382" height="692" class="flor-marco flor-arriba" aria-hidden="true" />
+        <img src="/imagenes/flor-lateral.webp" alt="" width="360" height="749" class="flor-marco flor-abajo" aria-hidden="true" />
+
+        <figure class="marco">
+            <div class="pantalla">
+                <video
+                    class="video"
+                    src={video}
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    aria-label="Video de los novios"
+                ></video>
+
+                <!-- Tocar el video lo pausa o lo sigue -->
+                <button type="button" class="tocar" aria-label="Reproducir o pausar el video">
+                    <span class="play" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l11-6.5z"></path></svg>
+                    </span>
+                </button>
+
+                <!-- Línea de tiempo: se arrastra para adelantar o retroceder -->
+                <input type="range" class="tiempo" min="0" max="1000" value="0" step="1" aria-label="Línea de tiempo del video" />
+            </div>
+            <figcaption class="inv-nombres pie">{novios}</figcaption>
+        </figure>
+    </div>
+
+    <p class="frase anima">{frase}</p>
+    <span class="adorno anima" aria-hidden="true">
+        <i></i><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.7-9.7-9A5.4 5.4 0 0 1 12 6.3 5.4 5.4 0 0 1 21.7 12c-2.2 4.3-9.7 9-9.7 9z"></path></svg><i></i>
+    </span>
+</section>
+
+<style>
+    /* Fondo verde de la paleta, con una luz suave arriba */
+    .historia {
+        padding: 14cqw 7cqw 14cqw;
+        background-image:
+            radial-gradient(ellipse at 50% 0%, rgba(243, 234, 220, 0.12), transparent 60%),
+            linear-gradient(var(--verde), var(--verde));
+        color: var(--crema);
+    }
+
+    .antetitulo {
+        margin: 0;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        font-size: 4.2cqw;
+        letter-spacing: 0.03em;
+        color: rgba(243, 234, 220, 0.8);
+    }
+
+    .titulo {
+        margin-top: 4cqw;
+        font-size: 9.5cqw;
+        line-height: 1.2;
+        color: var(--crema);
+    }
+
+    /* Adorno: dos líneas finas y un corazón al medio */
+    .adorno {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5cqw;
+        margin: 4cqw auto 0;
+        color: var(--mantequilla);
+    }
+
+    .adorno i {
+        width: 18cqw;
+        height: 1px;
+        background-image: linear-gradient(90deg, transparent, var(--mantequilla));
+    }
+
+    .adorno i:last-child {
+        background-image: linear-gradient(90deg, var(--mantequilla), transparent);
+    }
+
+    .adorno svg {
+        width: 3.4cqw;
+        height: 3.4cqw;
+    }
+
+    /* ── El marco tipo foto instantánea ─────────────────────── */
+    .marco-zona {
+        position: relative;
+        margin: 10cqw 0 0;
+    }
+
+    .marco {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        padding: 3cqw 3cqw 0;
+        background-image: linear-gradient(var(--crema), var(--crema));
+        box-shadow: 0 10px 28px rgba(30, 40, 28, 0.35);
+        transform: rotate(-1.6deg);
+    }
+
+    .flor-marco {
+        position: absolute;
+        z-index: 2;
+        height: auto;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .flor-arriba {
+        top: -9cqw;
+        right: -9cqw;
+        width: 20cqw;
+    }
+
+    .flor-abajo {
+        bottom: -12cqw;
+        left: -9cqw;
+        width: 18cqw;
+        transform: scaleX(-1);
+    }
+
+    .pantalla {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        background-image: linear-gradient(#3f4d3a, #3f4d3a);
+    }
+
+    .video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Toda la pantalla es el botón de pausa / sigue */
+    .tocar {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    /* El play grande, con un aro fino alrededor: se ve solo en pausa */
+    .play {
+        display: grid;
+        place-items: center;
+        width: 16cqw;
+        height: 16cqw;
+        border-radius: 50%;
+        background-image: linear-gradient(var(--verde), var(--verde));
+        color: var(--crema);
+        box-shadow: 0 0 0 2.4cqw rgba(243, 234, 220, 0.18), 0 0 0 2.6cqw rgba(243, 234, 220, 0.6);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .play svg {
+        width: 8cqw;
+        height: 8cqw;
+        margin-left: 1cqw;
+    }
+
+    .historia.sonando .play {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    /* Línea de tiempo abajo: lo ya visto en mantequilla, lo que falta en crema suave */
+    .tiempo {
+        position: absolute;
+        z-index: 2;
+        left: 3cqw;
+        right: 3cqw;
+        bottom: 1.5cqw;
+        height: 6cqw;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .tiempo::-webkit-slider-runnable-track {
+        height: 1.2cqw;
+        border-radius: 1cqw;
+        background-image: linear-gradient(90deg, var(--mantequilla) var(--avance, 0%), rgba(243, 234, 220, 0.4) var(--avance, 0%));
+    }
+
+    .tiempo::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 3.6cqw;
+        height: 3.6cqw;
+        margin-top: -1.2cqw;
+        border: 0;
+        border-radius: 50%;
+        background-image: linear-gradient(var(--mantequilla), var(--mantequilla));
+        box-shadow: 0 1px 4px rgba(30, 40, 28, 0.5);
+    }
+
+    .tiempo::-moz-range-track {
+        height: 1.2cqw;
+        border-radius: 1cqw;
+        background-image: linear-gradient(rgba(243, 234, 220, 0.4), rgba(243, 234, 220, 0.4));
+    }
+
+    .tiempo::-moz-range-progress {
+        height: 1.2cqw;
+        border-radius: 1cqw;
+        background-image: linear-gradient(var(--mantequilla), var(--mantequilla));
+    }
+
+    .tiempo::-moz-range-thumb {
+        width: 3.6cqw;
+        height: 3.6cqw;
+        border: 0;
+        border-radius: 50%;
+        background-image: linear-gradient(var(--mantequilla), var(--mantequilla));
+        box-shadow: 0 1px 4px rgba(30, 40, 28, 0.5);
+    }
+
+    .pie {
+        padding: 3.5cqw 0 4cqw;
+        font-size: 7cqw;
+        color: var(--verde);
+    }
+
+    .frase {
+        max-width: 80cqw;
+        margin: 14cqw auto 0;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        font-size: 4.4cqw;
+        line-height: 1.5;
+        color: var(--crema);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("nuestra-historia");
+        const video = seccion?.querySelector<HTMLVideoElement>(".video");
+        if (!seccion || !video) return;
+
+        const tocar = seccion.querySelector<HTMLButtonElement>(".tocar")!;
+        const tiempo = seccion.querySelector<HTMLInputElement>(".tiempo")!;
+
+        const pintar = () => {
+            seccion.classList.toggle("sonando", !video.paused);
+        };
+        video.addEventListener("play", pintar);
+        video.addEventListener("pause", pintar);
+
+        // La línea de tiempo sigue al video, y arrastrarla lo mueve
+        const pintarTiempo = () => {
+            const pct = video.duration ? (video.currentTime / video.duration) * 100 : 0;
+            tiempo.value = String(Math.round(pct * 10));
+            tiempo.style.setProperty("--avance", pct + "%");
+        };
+        video.addEventListener("timeupdate", pintarTiempo);
+        video.addEventListener("loadedmetadata", pintarTiempo);
+
+        tiempo.addEventListener("input", () => {
+            if (!video.duration) return;
+            video.currentTime = (Number(tiempo.value) / 1000) * video.duration;
+            tiempo.style.setProperty("--avance", Number(tiempo.value) / 10 + "%");
+        });
+
+        // El invitado lo pausó a mano: no se vuelve a arrancar solo
+        let pausadoAMano = false;
+
+        tocar.addEventListener("click", () => {
+            if (video.paused) {
+                pausadoAMano = false;
+                video.play().catch(() => {});
+            } else {
+                pausadoAMano = true;
+                video.pause();
+            }
+        });
+
+        // Arranca solo (sin sonido) al aparecer; se pausa al salir
+        const mirar = new IntersectionObserver(
+            (entradas) => {
+                for (const e of entradas) {
+                    if (e.isIntersecting) {
+                        if (!pausadoAMano) video.play().catch(() => {});
+                    } else if (!video.paused) {
+                        video.pause();
+                    }
+                }
+            },
+            { threshold: 0.5 },
+        );
+        mirar.observe(video);
+        pintar();
+    });
+</script>

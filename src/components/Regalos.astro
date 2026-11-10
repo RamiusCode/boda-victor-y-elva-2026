@@ -1,23 +1,33 @@
 ---
 // src/components/Regalos.astro - Sugerencia de regalos: un regalito, el
-// agradecimiento de los novios, los datos de la cuenta (si los hay) y la
-// firma con sus nombres. Mismo estilo del resto de las secciones.
+// agradecimiento de los novios, la "lluvia de sobres" (QR y datos de la
+// transferencia) y la firma con sus nombres. Mismo estilo del resto de las secciones.
 
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const agradecimiento =
     "Dios ha sido fiel con nosotros y estamos muy agradecidos por comenzar este nuevo capítulo de nuestras vidas rodeados de tanto amor.";
 const presencia =
-    "Tu presencia es el mejor regalo que podemos recibir en este día tan especial. Si deseas acompañarnos también en esta nueva etapa de nuestro hogar.";
-const datosIntro =
-    "Te dejamos con cariño nuestros datos para quienes deseen apoyarnos de corazón.";
-// Las cuentas que manden los novios, una por renglón. Si queda vacío, el
-// aviso "Te dejamos nuestros datos" no se muestra.
-// Ejemplo: const cuentas = ["BCP: 000000000000", "CCI: 00000000000000000"];
-const cuentas: string[] = [];
+    "Tu presencia es el mejor regalo que podemos recibir en este día tan especial.";
+// Lluvia de sobres: una tarjeta partida en dos (el sobre | el QR, que se
+// amplía al tocarlo), los datos de la transferencia y el número de cuenta
+// con su botón para copiarlo
+const sobre = "/imagenes/sobre.webp";
+const qr = "/imagenes/qr-banco.webp";
+const rotuloSobre = "Lluvia de sobres";
+const rotuloQr = "Toca para ampliar";
+const tituloDatos = "Datos para transferencia";
+const cuenta = {
+    banco: "Banco Sol",
+    // Si los novios mandan el tipo de cuenta (por ejemplo "Caja de ahorros"),
+    // va acá y aparece al lado del banco
+    tipo: "",
+    titular: "Elva Caraballo Irala",
+    numero: "1842030-000-001",
+};
 const detalle =
     "Cada muestra de cariño, oración o detalle significa mucho para nosotros y será recibida con profunda gratitud y guardada en nuestro corazón.";
 const despedida = "Con todo nuestro cariño,";
-const novio = "Victor Augusto";
+const novio = "Victor";
 const novia = "Elva";
 // ──────────────────────────────────────────────────────────────
 ---
@@ -34,18 +44,61 @@ const novia = "Elva";
     <p class="inv-texto parrafo anima">{agradecimiento}</p>
     <p class="inv-texto parrafo anima">{presencia}</p>
 
-    {
-        cuentas.length > 0 && (
-            <div class="anima">
-                <p class="inv-texto parrafo">{datosIntro}</p>
-                <p class="inv-texto cuentas">
-                    {cuentas.map((c) => (
-                        <span>{c}</span>
-                    ))}
-                </p>
+    <div class="sobres anima">
+        <!-- Arriba, partido en dos: el sobre y el QR -->
+        <div class="mitades">
+            <div class="mitad">
+                <img src={sobre} alt="" width="480" height="355" class="sobre" aria-hidden="true" loading="lazy" />
+                <p class="rotulo-mini">{rotuloSobre}</p>
             </div>
-        )
-    }
+            <span class="divisor" aria-hidden="true"></span>
+            <div class="mitad">
+                <button type="button" class="qr" id="abrir-qr" aria-label="Ampliar el código QR">
+                    <img src={qr} alt="Código QR para transferir" width="679" height="677" loading="lazy" />
+                </button>
+                <p class="rotulo-mini">{rotuloQr}</p>
+            </div>
+        </div>
+
+        <!-- Los datos -->
+        <p class="titulo-datos">{tituloDatos}</p>
+        <div class="campos">
+            <div class={cuenta.tipo ? "campo" : "campo ancho"}>
+                <p class="etiqueta">Banco</p>
+                <p class="valor">{cuenta.banco}</p>
+            </div>
+            {
+                cuenta.tipo && (
+                    <div class="campo">
+                        <p class="etiqueta">Tipo de cuenta</p>
+                        <p class="valor">{cuenta.tipo}</p>
+                    </div>
+                )
+            }
+            <div class="campo ancho">
+                <p class="etiqueta">Titular</p>
+                <p class="valor">{cuenta.titular}</p>
+            </div>
+        </div>
+
+        <!-- El número de cuenta, grande, con su botón para copiar -->
+        <div class="cuenta-caja">
+            <div>
+                <p class="etiqueta">N.º de cuenta</p>
+                <p class="numero-cuenta" id="numero-cuenta">{cuenta.numero}</p>
+            </div>
+            <button type="button" class="copiar" id="copiar-cuenta" data-numero={cuenta.numero}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span class="copiar-texto">Copiar</span>
+            </button>
+        </div>
+
+        <!-- El QR en grande: se cierra tocando afuera o la X -->
+        <dialog class="qr-ventana" id="ventana-qr">
+            <button type="button" class="qr-cerrar" aria-label="Cerrar">×</button>
+            <img src={qr} alt="Código QR para transferir, ampliado" width="679" height="677" />
+        </dialog>
+    </div>
 
     <p class="inv-texto parrafo anima">{detalle}</p>
 
@@ -94,15 +147,207 @@ const novia = "Elva";
         line-height: 1.6;
     }
 
-    .cuentas {
-        margin: 0 auto 6cqw;
-        font-weight: 700;
-        font-size: 4.4cqw;
-        line-height: 1.7;
+    /* ── Lluvia de sobres: la tarjeta ───────────────────────── */
+    .sobres {
+        max-width: 84cqw;
+        margin: 0 auto 9cqw;
+        padding: 6cqw 5cqw 5cqw;
+        border: 1px solid var(--oro-suave);
+        border-radius: 4cqw;
+        background-image: linear-gradient(rgba(247, 231, 161, 0.22), rgba(247, 231, 161, 0.22));
+        box-shadow: 0 4px 14px rgba(91, 110, 83, 0.1);
     }
 
-    .cuentas span {
+    /* Arriba: sobre | QR, con una línea fina al medio */
+    .mitades {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        align-items: center;
+        gap: 4cqw;
+    }
+
+    .mitad {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3cqw;
+    }
+
+    .divisor {
+        align-self: stretch;
+        width: 1px;
+        background-image: linear-gradient(transparent, var(--oro-suave) 15%, var(--oro-suave) 85%, transparent);
+    }
+
+    .sobre {
         display: block;
+        width: 28cqw;
+        height: auto;
+        filter: drop-shadow(0 3px 6px rgba(91, 110, 83, 0.2));
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* El QR es blanco y negro para que lo lea la cámara: no se pinta */
+    .qr {
+        display: block;
+        width: 24cqw;
+        padding: 1.5cqw;
+        border: 1px solid var(--oro-suave);
+        border-radius: 2cqw;
+        background-image: linear-gradient(#ffffff, #ffffff);
+        cursor: zoom-in;
+    }
+
+    .qr img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .rotulo-mini {
+        margin: 0;
+        font-size: 2.6cqw;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--verde);
+    }
+
+    /* "Datos para transferencia" entre dos líneas */
+    .titulo-datos {
+        display: flex;
+        align-items: center;
+        gap: 3cqw;
+        margin: 6cqw 0 0;
+        font-size: 2.8cqw;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--verde);
+    }
+
+    .titulo-datos::before,
+    .titulo-datos::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-image: linear-gradient(var(--oro-suave), var(--oro-suave));
+    }
+
+    .campos {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4cqw 5cqw;
+        margin-top: 5cqw;
+        text-align: left;
+    }
+
+    .campo.ancho {
+        grid-column: 1 / -1;
+    }
+
+    .etiqueta {
+        margin: 0;
+        font-size: 2.5cqw;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--oro);
+    }
+
+    .valor {
+        margin: 1cqw 0 0;
+        font-size: 3.8cqw;
+        line-height: 1.3;
+        color: var(--verde);
+    }
+
+    /* El número de cuenta, en su cajita, con el botón de copiar */
+    .cuenta-caja {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 3cqw;
+        margin-top: 5cqw;
+        padding: 3.5cqw 4cqw;
+        border: 1px solid var(--oro-suave);
+        border-radius: 3cqw;
+        background-image: linear-gradient(var(--crema), var(--crema));
+        text-align: left;
+    }
+
+    /* Un toque selecciona el número entero, listo para copiar */
+    .numero-cuenta {
+        margin: 1cqw 0 0;
+        font-size: 5cqw;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        color: var(--verde);
+        user-select: all;
+        -webkit-user-select: all;
+    }
+
+    .copiar {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        gap: 1.5cqw;
+        padding: 2.2cqw 3.6cqw;
+        border: 0;
+        border-radius: 2cqw;
+        background-image: linear-gradient(var(--verde), var(--verde));
+        font-family: "Quicksand", sans-serif;
+        font-weight: 600;
+        font-size: 3.2cqw;
+        color: var(--crema);
+        cursor: pointer;
+    }
+
+    .copiar svg {
+        width: 3.6cqw;
+        height: 3.6cqw;
+    }
+
+    .copiar:active {
+        transform: scale(0.96);
+    }
+
+    /* El QR ampliado: fijo y centrado en la pantalla. Con !important porque
+       las secciones le ponen position: relative a lo que cuelga de ellas */
+    .qr-ventana {
+        position: fixed !important;
+        inset: 0;
+        width: min(92vw, 460px);
+        margin: auto;
+        padding: 14px;
+        border: 0;
+        border-radius: 16px;
+        background-image: linear-gradient(#ffffff, #ffffff);
+        box-shadow: 0 20px 50px rgba(91, 110, 83, 0.4);
+    }
+
+    .qr-ventana::backdrop {
+        background: rgba(91, 110, 83, 0.55);
+    }
+
+    .qr-ventana img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .qr-cerrar {
+        position: absolute;
+        top: 2px;
+        right: 8px;
+        border: 0;
+        background: none;
+        font-size: 28px;
+        line-height: 1;
+        color: #5b6e53;
+        cursor: pointer;
     }
 
     .despedida {
@@ -127,3 +372,37 @@ const novia = "Elva";
         margin: 1.5cqw 0;
     }
 </style>
+
+<script>
+    // El QR se amplía al tocarlo
+    document.addEventListener("DOMContentLoaded", () => {
+        const ventana = document.getElementById("ventana-qr") as HTMLDialogElement | null;
+        const abrir = document.getElementById("abrir-qr");
+        if (!ventana || !abrir) return;
+        abrir.addEventListener("click", () => {
+            if (!ventana.open) ventana.showModal();
+        });
+        // Tocar la X o cualquier parte de la ventana la cierra
+        ventana.addEventListener("click", () => ventana.close());
+    });
+
+    // El número de cuenta se copia con un toque
+    document.addEventListener("DOMContentLoaded", () => {
+        const boton = document.getElementById("copiar-cuenta") as HTMLButtonElement | null;
+        const texto = boton?.querySelector<HTMLElement>(".copiar-texto");
+        if (!boton || !texto) return;
+        const original = texto.textContent ?? "";
+        boton.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(boton.dataset.numero ?? "");
+                texto.textContent = "¡Copiado!";
+            } catch {
+                // Sin permiso para el portapapeles: se deja el número seleccionado
+                const num = document.getElementById("numero-cuenta");
+                if (num) window.getSelection()?.selectAllChildren(num);
+                texto.textContent = "Cópialo";
+            }
+            setTimeout(() => (texto.textContent = original), 2000);
+        });
+    });
+</script>

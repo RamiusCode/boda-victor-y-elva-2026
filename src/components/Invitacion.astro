@@ -10,11 +10,13 @@ import Fecha from "./Fecha.astro";
 import PaseInvitado from "./PaseInvitado.astro";
 import Ubicacion from "./Ubicacion.astro";
 import Vestimenta from "./Vestimenta.astro";
+import Itinerario from "./Itinerario.astro";
 import NoNinos from "./NoNinos.astro";
 import Regalos from "./Regalos.astro";
 import CompartirFoto from "./CompartirFoto.astro";
 import Confirmacion from "./Confirmacion.astro";
 import Puntualidad from "./Puntualidad.astro";
+import NuestraHistoria from "./NuestraHistoria.astro";
 import AlbumFotos from "./AlbumFotos.astro";
 import Versiculo from "./Versiculo.astro";
 import BotonMusica from "./BotonMusica.astro";
@@ -46,12 +48,14 @@ const { pases = 0, invitado = "", conectado = false } = Astro.props;
     <Inicio />
     <Padres />
     <Padrinos />
+    <NuestraHistoria />
     <Fecha />
     {(invitado || conectado || pases > 0) && (
         <PaseInvitado invitado={invitado} pases={pases} conectado={conectado} />
     )}
     <Ubicacion />
     <Vestimenta />
+    <Itinerario />
     <NoNinos />
     <Regalos />
     <CompartirFoto />

@@ -1,12 +1,11 @@
 ---
 // src/components/Vestimenta.astro - El código de vestimenta: título dorado,
-// un círculo fino con el traje y el vestido animados (dorados), y la aclaración.
+// un círculo fino con el traje y el vestido (dibujos dorados), y la aclaración.
 
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const titulo = "Código de vestimenta";
-const codigo = "Formal de día";
-const detalle = "Caballeros con traje, damas con vestido largo";
-const aclaracion = "(Los colores blanco, beige y amarillo están reservados para las damitas)";
+const codigo = "Formal";
+const aclaracion = "No asistir con blanco, beige y rojo";
 // ──────────────────────────────────────────────────────────────
 ---
 
@@ -17,13 +16,13 @@ const aclaracion = "(Los colores blanco, beige y amarillo están reservados para
     <h2 class="inv-titulo anima">{titulo}</h2>
 
     <div class="circulo anima" aria-hidden="true">
-        <img src="/imagenes/traje.webp" alt="" width="180" height="180" class="icono" />
-        <img src="/imagenes/vestido.webp" alt="" width="200" height="200" class="icono" />
+        <img src="/imagenes/traje-hombre.webp" alt="" width="126" height="300" class="icono" />
+        <img src="/imagenes/traje-mujer.webp" alt="" width="237" height="300" class="icono" />
     </div>
 
     <p class="inv-texto codigo anima">{codigo}</p>
-    <p class="inv-texto detalle anima">{detalle}</p>
     <p class="inv-texto aclaracion anima">{aclaracion}</p>
+
 </section>
 
 <style>
@@ -52,18 +51,18 @@ const aclaracion = "(Los colores blanco, beige y amarillo están reservados para
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 2cqw;
+        gap: 5cqw;
         width: 66cqw;
         height: 66cqw;
         margin: 8cqw auto 0;
-        border: 1px solid #e3c47a;
+        border: 1px solid #d8bf63;
         border-radius: 50%;
-        color: #c98f3c;
+        color: #5b6e53;
     }
 
     .icono {
-        width: 27cqw;
-        height: auto;
+        height: 36cqw;
+        width: auto;
         user-select: none;
         -webkit-user-drag: none;
     }
@@ -78,14 +77,6 @@ const aclaracion = "(Los colores blanco, beige y amarillo están reservados para
         color: var(--texto);
     }
 
-    .detalle {
-        max-width: 78cqw;
-        margin: 3cqw auto 0;
-        font-style: italic;
-        font-size: 4.8cqw;
-        line-height: 1.5;
-    }
-
     .aclaracion {
         max-width: 78cqw;
         margin: 3cqw auto 0;
@@ -93,4 +84,5 @@ const aclaracion = "(Los colores blanco, beige y amarillo están reservados para
         font-size: 4.4cqw;
         line-height: 1.5;
     }
+
 </style>

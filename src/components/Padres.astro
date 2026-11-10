@@ -7,9 +7,9 @@
 const bendicion = "Con la bendición de Dios y de nuestros padres:";
 const rotuloNovio = "Padres del novio";
 const rotuloNovia = "Padres de la novia";
-const padresNovio = ["Juan Jose Serrudo Miranda", "Felicidad Loayza Herrera"];
+const padresNovio = ["Juan Jose Serrudo Miranda (+)", "Felicidad Loayza Herrera (+)"];
 const padresNovia = ["Eleuterio Caraballo Solíz", "Alejandra Irala Cuéllar"];
-const novio = "Victor Augusto";
+const novio = "Victor";
 const novia = "Elva";
 // ──────────────────────────────────────────────────────────────
 ---
@@ -66,12 +66,14 @@ const novia = "Elva";
 
     .columnas p {
         margin: 0;
-        font-size: 3.25cqw;
+        font-size: 3cqw;
         line-height: 1.5;
     }
 
     .columnas span {
         display: block;
+        /* Cada nombre en un solo renglón, con su (+) al lado */
+        white-space: nowrap;
     }
 
     /* Igual que los rótulos de los padrinos */
@@ -80,7 +82,7 @@ const novia = "Elva";
         font-weight: 700;
         font-size: 3.4cqw;
         text-transform: uppercase;
-        color: #4a4a44;
+        color: var(--oro);
     }
 
     .novios {

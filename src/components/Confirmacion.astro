@@ -29,12 +29,20 @@ const pasesVentana = invitado && pases > 0 ? pases : 1;
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const foto = "/imagenes/foto3.webp";
 
-const botonConfirmar = "Confirmar asistencia";
+const presiona = "Presiona el círculo para confirmar";
+
+// ¿Tienes alguna duda? Dos botones de WhatsApp, uno a cada novio. Los
+// números van con el código de Bolivia (591) y sin el +. No llevan mensaje
+// armado: abre el chat vacío para que cada invitado escriba lo suyo.
+const dudaTitulo = "¿Tienes alguna duda?";
+const dudaEscribenos = "Escríbenos";
+const contactos = [
+    { nombre: "Victor", telefono: "59176398612" },
+    { nombre: "Elva", telefono: "59175552190" },
+];
 const importante = "Es muy importante que nos confirmes tu asistencia";
 const titulo = "Confirmación de asistencia";
-const inicialNovio = "V";
-const inicialNovia = "E";
-const aviso = "Tu confirmación nos ayuda a preparar este día con mucho cariño.";
+const aviso = "Apreciaríamos mucho su confirmación antes del 30 de noviembre.";
 const placeholderNombre = "Escribe tu nombre";
 /*
    El mensaje de WhatsApp. El número va con el código de país y sin el +
@@ -79,46 +87,57 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         />
     </label>
 
-    <!-- El logo: solo se ve, no se toca -->
+    <!-- El círculo es el botón de confirmar: WhatsApp, o la ventana si hay formulario -->
     <div class="circulo-fila anima">
-        <div class="circulo" aria-hidden="true">
-            <span class="iniciales">
-                <span>{inicialNovio}</span><i></i><span>{inicialNovia}</span>
-            </span>
-        </div>
+        <a
+            class="circulo"
+            data-whatsapp
+            data-confirmar={JSON.stringify(datosWhatsapp)}
+            href={enlaceConfirmar(datosWhatsapp)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Confirmar asistencia por WhatsApp"
+            style={conFormulario && invitado ? "display: none" : undefined}
+        >
+            <img src="/imagenes/logo2.webp" alt="" width="420" height="384" class="logo-circulo" aria-hidden="true" />
+            <span class="presiona">{presiona}</span>
+        </a>
+        {
+            conFormulario && (
+                <button
+                    type="button"
+                    class="circulo"
+                    id="abrir-confirmacion"
+                    aria-label="Confirmar asistencia"
+                    style={invitado ? undefined : "display: none"}
+                >
+                    <img src="/imagenes/logo2.webp" alt="" width="420" height="384" class="logo-circulo" aria-hidden="true" />
+                    <span class="presiona">{presiona}</span>
+                </button>
+            )
+        }
+        <Mano />
     </div>
 
     <p class="inv-texto aviso anima">{aviso}</p>
 
-    <!-- El botón que confirma: WhatsApp, o la ventana si hay formulario -->
-    <div class="confirmar-fila anima">
-        <div class="inv-boton-fila">
-            <a
-                class="inv-boton"
-                id="boton-confirmar"
-                data-whatsapp
-                data-confirmar={JSON.stringify(datosWhatsapp)}
-                href={enlaceConfirmar(datosWhatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={conFormulario && invitado ? "display: none" : undefined}
-            >
-                {botonConfirmar}
-            </a>
-            {
-                conFormulario && (
-                    <button
-                        type="button"
-                        class="inv-boton"
-                        id="abrir-confirmacion"
-                        style={invitado ? undefined : "display: none"}
-                    >
-                        {botonConfirmar}
-                    </button>
-                )
-            }
-            <Mano />
+    <div class="duda anima">
+        <h3 class="inv-titulo duda-titulo">{dudaTitulo}</h3>
+        <p class="inv-texto">{dudaEscribenos}</p>
+        <div class="duda-columna">
+            <div class="duda-fila">
+                <a class="inv-boton duda-boton" href={`https://wa.me/${contactos[0].telefono}`} target="_blank" rel="noopener noreferrer" aria-label={`Escribir por WhatsApp a ${contactos[0].nombre}`}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.8h0a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88zm8.41-18.3A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h0c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.17-3.48-8.41z"></path></svg>
+                    ¡Hola {contactos[0].nombre}!
+                </a>
+                <Mano />
+            </div>
+            <a class="inv-boton duda-boton" href={`https://wa.me/${contactos[1].telefono}`} target="_blank" rel="noopener noreferrer" aria-label={`Escribir por WhatsApp a ${contactos[1].nombre}`}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.8h0a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88zm8.41-18.3A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h0c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.17-3.48-8.41z"></path></svg>
+                    ¡Hola {contactos[1].nombre}!
+                </a>
         </div>
+    </div>
     </div>
 
     {
@@ -155,6 +174,12 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                                 </label>
                             ))
                         }
+                    </div>
+
+                    <!-- Un campo de nombre por cada persona que asiste (los arma el script) -->
+                    <div class="c-asistentes" id="c-asistentes">
+                        <p class="c-pregunta">¿Quién asistirá?</p>
+                        <div class="c-nombres" id="c-nombres"></div>
                     </div>
 
                     <button type="submit" class="inv-boton c-confirmar" value="si">
@@ -231,20 +256,48 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         margin-top: 18cqw;
     }
 
-    /* ── Botón "Confirmar asistencia" ───────────────────────── */
-    .confirmar-fila {
-        margin-top: 9cqw;
+    /* ── ¿Tienes alguna duda? ───────────────────────────────── */
+    .duda {
+        margin-top: 16cqw;
     }
 
-    /* El botón queda centrado solo; la manito va afuera, a su derecha */
-    .confirmar-fila :global(.inv-boton-fila) {
+    .duda-titulo {
+        margin-bottom: 4cqw;
+    }
+
+    .duda-boton {
+        gap: 2.4cqw;
+        min-width: 58cqw;
+        padding: 2.8cqw 8cqw;
+    }
+
+    .duda-boton svg {
+        width: 7cqw;
+        height: 7cqw;
+    }
+
+    .duda :global(.inv-mano) {
+        margin-top: 5cqw;
+    }
+
+    .duda-columna {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4cqw;
+        margin-top: 4cqw;
+    }
+
+    /* La manito va afuera, a la derecha del primero, sin correr el centro */
+    .duda-fila {
         position: relative;
+        display: inline-flex;
     }
 
-    .confirmar-fila :global(.inv-mano) {
+    .duda-fila :global(.inv-mano) {
         position: absolute;
         left: calc(100% + 1cqw);
-        top: 4cqw;
+        top: 3cqw;
         margin-top: 0;
     }
 
@@ -259,7 +312,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         width: 100%;
         padding: 2cqw 1cqw;
         border: 0;
-        border-bottom: 1px solid #c9c9c4;
+        border-bottom: 1px solid #5b6e53;
         background: transparent;
         font-family: "Quicksand", sans-serif;
         font-weight: 500;
@@ -270,7 +323,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
     }
 
     .nombre-casilla input::placeholder {
-        color: #a3a39c;
+        color: #5b6e53;
     }
 
     .nombre-casilla input:focus {
@@ -278,11 +331,11 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
     }
 
     .nombre-casilla.falta input {
-        border-bottom-color: #c0573d;
+        border-bottom-color: #5b6e53;
     }
 
     .nombre-casilla.falta input::placeholder {
-        color: #c0573d;
+        color: #5b6e53;
     }
 
     /* ── El círculo con las iniciales ───────────────────────── */
@@ -301,28 +354,42 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         justify-content: center;
         width: 60cqw;
         height: 60cqw;
-        margin: 0 auto;
+        margin-left: 8cqw;
         padding: 0;
-        border: 1px solid #8f8f86;
+        border: 1px solid #5b6e53;
         border-radius: 50%;
-        background-image: linear-gradient(#fff, #fff);
-        color: #111;
+        background-image: linear-gradient(#f3eadc, #f3eadc);
+        color: #5b6e53;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .iniciales {
-        display: flex;
-        align-items: center;
-        gap: 3cqw;
-        font-family: "Cormorant Garamond", serif;
-        font-weight: 500;
-        font-size: 22cqw;
-        line-height: 1;
+    .circulo:active {
+        transform: scale(0.97);
+        box-shadow: 0 0 0 6px rgba(190, 158, 55, 0.15);
     }
 
-    .iniciales i {
-        width: 1px;
-        height: 22cqw;
-        background-image: linear-gradient(#111, #111);
+    .logo-circulo {
+        width: 30cqw;
+        height: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .presiona {
+        max-width: 34cqw;
+        margin-top: 3cqw;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 600;
+        font-size: 2.9cqw;
+        line-height: 1.25;
+        color: #5b6e53;
+    }
+
+    .circulo-fila :global(.inv-mano) {
+        margin-left: -8cqw;
+        margin-bottom: 4cqw;
     }
 
     .aviso {
@@ -332,6 +399,10 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
 
     /* ── Ventana de confirmación ────────────────────────────── */
     .ventana {
+        /* Fija y centrada en la pantalla. Con !important porque la regla de las
+           secciones (.inv-seccion > *) le pone position: relative */
+        position: fixed !important;
+        inset: 0;
         container-type: inline-size;
         width: min(88vw, 400px);
         max-height: 92vh;
@@ -345,15 +416,15 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         color: var(--texto);
         font-family: "Quicksand", sans-serif;
         font-weight: 500;
-        background-image: linear-gradient(#fff, #fff);
+        background-image: linear-gradient(#f3eadc, #f3eadc);
         box-shadow:
-            inset 0 0 0 6px #fff,
-            inset 0 0 0 7px rgba(195, 146, 47, 0.5),
-            0 20px 50px rgba(30, 35, 25, 0.35);
+            inset 0 0 0 6px #f3eadc,
+            inset 0 0 0 7px rgba(190, 158, 55, 0.5),
+            0 20px 50px rgba(91, 110, 83, 0.35);
     }
 
     .ventana::backdrop {
-        background: rgba(40, 45, 35, 0.5);
+        background: rgba(91, 110, 83, 0.5);
         backdrop-filter: blur(3px);
     }
 
@@ -378,7 +449,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         background: none;
         font-size: 26px;
         line-height: 1;
-        color: #9a9a92;
+        color: #5b6e53;
         cursor: pointer;
     }
 
@@ -433,7 +504,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         width: 1.6cqw;
         height: 1.6cqw;
         border: 1px solid var(--oro);
-        background-image: linear-gradient(#fff, #fff);
+        background-image: linear-gradient(#f3eadc, #f3eadc);
         transform: translate(-50%, -50%) rotate(45deg);
     }
 
@@ -446,14 +517,6 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
     .c-reservado strong {
         font-weight: 700;
         color: var(--oro-oscuro);
-    }
-
-    /* "¿Cuántos asistirán?" y los circulitos: escondidos a pedido. Siguen en
-       el código porque el script los usa; sin tocar nada, confirman todos
-       los pases reservados. */
-    .c-pregunta,
-    .c-cantidades {
-        display: none !important;
     }
 
     .c-pregunta {
@@ -487,22 +550,56 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         font-size: 5cqw;
         color: var(--oliva);
         cursor: pointer;
-        background-image: linear-gradient(#fff, #fff);
-        box-shadow: inset 0 0 0 1.5px rgba(138, 150, 114, 0.6);
+        background-image: linear-gradient(#f3eadc, #f3eadc);
+        box-shadow: inset 0 0 0 1.5px rgba(91, 110, 83, 0.6);
         transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
     }
 
     /* La elegida, en verde oliva */
     .c-cantidad input:checked + span {
-        color: #fff;
+        color: #f3eadc;
         background-image: linear-gradient(var(--oliva), var(--oliva));
-        box-shadow: 0 4px 10px rgba(70, 85, 50, 0.3);
+        box-shadow: 0 4px 10px rgba(91, 110, 83, 0.3);
         transform: scale(1.08);
     }
 
     .c-cantidad input:focus-visible + span {
         outline: 2px solid var(--oro);
         outline-offset: 3px;
+    }
+
+    .c-asistentes {
+        width: 100%;
+    }
+
+    .c-nombres {
+        display: flex;
+        flex-direction: column;
+        gap: 3cqw;
+        margin-top: 3cqw;
+    }
+
+    .c-nombres :global(.c-asistente input) {
+        width: 100%;
+        padding: 2.4cqw 1cqw;
+        border: 0;
+        border-bottom: 1px solid #5b6e53;
+        border-radius: 0;
+        background: transparent;
+        font-family: "Quicksand", sans-serif;
+        font-weight: 500;
+        font-size: 4.2cqw;
+        text-align: center;
+        color: #5b6e53;
+        outline: none;
+    }
+
+    .c-nombres :global(.c-asistente input::placeholder) {
+        color: rgba(91, 110, 83, 0.6);
+    }
+
+    .c-nombres :global(.c-asistente input:focus) {
+        border-bottom-color: var(--oro);
     }
 
     .c-confirmar {
@@ -534,16 +631,16 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         margin-bottom: 4cqw;
         border-radius: 50%;
         font-size: 7cqw;
-        color: #fff;
+        color: #f3eadc;
         background-image: linear-gradient(var(--oliva), var(--oliva));
-        box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--oro);
+        box-shadow: 0 0 0 4px #f3eadc, 0 0 0 5px var(--oro);
     }
 
     .c-detalle {
         margin: 3cqw 0 0;
         font-size: 4.2cqw;
         line-height: 1.4;
-        color: #6b6b63;
+        color: #5b6e53;
     }
 </style>
 
@@ -591,6 +688,8 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         const textoTituloGracias = tituloGracias?.textContent ?? "";
         const pregunta = ventana.querySelector<HTMLElement>(".c-pregunta");
         const cantidades = ventana.querySelector<HTMLElement>(".c-cantidades");
+        const asistentes = ventana.querySelector<HTMLElement>("#c-asistentes");
+        const nombres = ventana.querySelector<HTMLElement>("#c-nombres");
         const confirmar = formulario.querySelector<HTMLButtonElement>(".c-confirmar");
         const textoConfirmar = confirmar?.querySelector<HTMLElement>(".boton-texto");
         const textoBotonConfirmar = textoConfirmar?.textContent ?? "";
@@ -667,9 +766,36 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             cantidades
                 .querySelectorAll<HTMLInputElement>('input[name="asistentes"]')
                 .forEach((r) => (r.checked = Number(r.value) === marcada));
+            pintarNombres();
         }
 
-        cantidades?.addEventListener("change", () => (eligioAMano = true));
+        // Un campo de nombre por cada persona que va a asistir: se agregan o
+        // se sacan según el número elegido, y lo ya escrito se conserva.
+        function pintarNombres() {
+            if (!nombres || !asistentes) return;
+            const cuantos = eligeCantidad ? elegida() : 0;
+            asistentes.style.display = cuantos > 0 ? "" : "none";
+            const campos = nombres.querySelectorAll<HTMLElement>(".c-asistente");
+            for (let i = campos.length; i < cuantos; i++) {
+                const etiqueta = document.createElement("label");
+                etiqueta.className = "c-asistente";
+                const campo = document.createElement("input");
+                campo.type = "text";
+                campo.name = "asistente";
+                campo.autocomplete = "off";
+                campo.placeholder = `Nombre de la persona ${i + 1}`;
+                campo.setAttribute("aria-label", `Nombre de la persona ${i + 1}`);
+                etiqueta.append(campo);
+                nombres.append(etiqueta);
+            }
+            for (let i = campos.length; i > cuantos; i--) campos[i - 1].remove();
+        }
+
+        cantidades?.addEventListener("change", () => {
+            eligioAMano = true;
+            pintarNombres();
+        });
+        pintarNombres();
 
         function llenar(inv: Invitado, primeraVez: boolean) {
             const anterior = elegida();
@@ -816,7 +942,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             "confirmar-nombre",
         ) as HTMLInputElement | null;
         const circulo = document.querySelector<HTMLAnchorElement>(
-            "#boton-confirmar",
+            "#confirmacion a.circulo[data-confirmar]",
         );
         if (!input || !circulo) return;
 

@@ -1,13 +1,11 @@
 ---
 // src/components/NoNinos.astro - Aviso de que la celebración es solo para
-// adultos: título dorado y el mensaje de los novios, con el mismo estilo
-// del resto de las secciones.
+// adultos: título dorado y una línea en negrita, con el mismo estilo del
+// resto de las secciones.
 
 // ── DATOS EDITABLES ───────────────────────────────────────────
-const titulo = "No niños";
-const mensaje =
-    "Desde el respeto y el amor que les tenemos, deseamos compartirles que esta celebración, bajo la bendición de Dios, será exclusiva para adultos.";
-const gracias = "¡Agradecemos su comprensión y cariño!";
+const titulo = "No niños 👶";
+const aviso = "Exclusiva para adultos";
 // ──────────────────────────────────────────────────────────────
 ---
 
@@ -16,8 +14,7 @@ const gracias = "¡Agradecemos su comprensión y cariño!";
 
     <h2 class="inv-titulo anima">{titulo}</h2>
 
-    <p class="inv-texto mensaje anima">{mensaje}</p>
-    <p class="inv-texto gracias anima">{gracias}</p>
+    <p class="inv-texto aviso anima">{aviso}</p>
 </section>
 
 <style>
@@ -32,17 +29,9 @@ const gracias = "¡Agradecemos su comprensión y cariño!";
         width: 22cqw;
     }
 
-    .mensaje {
-        max-width: 78cqw;
-        margin: 7cqw auto 0;
-        font-size: 4.4cqw;
-        line-height: 1.6;
-    }
-
-    .gracias {
-        max-width: 78cqw;
-        margin: 6cqw auto 0;
+    .aviso {
+        margin: 5cqw 0 0;
         font-weight: 700;
-        font-size: 4.4cqw;
+        font-size: 5cqw;
     }
 </style>
