@@ -701,6 +701,8 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         // En la muestra se elige como en el diseño. Conectada, lo decide el
         // panel: solo con la función `cantidad` prendida.
         let eligeCantidad = true;
+        let pideAcompanantes = false;
+        const nombresGuardados: string[] = [];
         // Mientras el invitado no toque los números, la cantidad sigue a los
         // pases: si los novios corrigen de 4 a 5, confirma 5.
         let eligioAMano = false;
@@ -773,23 +775,47 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
         // se sacan según el número elegido, y lo ya escrito se conserva.
         function pintarNombres() {
             if (!nombres || !asistentes) return;
-            const cuantos = eligeCantidad ? elegida() : 0;
+            const actuales = Array.from(
+                nombres.querySelectorAll<HTMLInputElement>('input[name="asistente"]'),
+            );
+            actuales.forEach((campo, i) => {
+                nombresGuardados[i] = campo.value;
+            });
+
+            const cuantos = pideAcompanantes
+                ? eligeCantidad
+                    ? elegida()
+                    : pases
+                : 0;
             asistentes.style.display = cuantos > 0 ? "" : "none";
-            const campos = nombres.querySelectorAll<HTMLElement>(".c-asistente");
-            for (let i = campos.length; i < cuantos; i++) {
+            const etiquetas = nombres.querySelectorAll<HTMLElement>(".c-asistente");
+            for (let i = etiquetas.length; i < cuantos; i++) {
                 const etiqueta = document.createElement("label");
                 etiqueta.className = "c-asistente";
                 const campo = document.createElement("input");
                 campo.type = "text";
                 campo.name = "asistente";
                 campo.autocomplete = "off";
+                campo.maxLength = 100;
                 campo.placeholder = `Nombre de la persona ${i + 1}`;
                 campo.setAttribute("aria-label", `Nombre de la persona ${i + 1}`);
+                campo.value = nombresGuardados[i] ?? "";
                 etiqueta.append(campo);
                 nombres.append(etiqueta);
             }
-            for (let i = campos.length; i > cuantos; i--) campos[i - 1].remove();
+            for (let i = etiquetas.length; i > cuantos; i--) etiquetas[i - 1].remove();
         }
+
+        nombres?.addEventListener("input", (e) => {
+            const campo = e.target;
+            if (!(campo instanceof HTMLInputElement) || campo.name !== "asistente") return;
+            const campos = Array.from(
+                nombres.querySelectorAll<HTMLInputElement>('input[name="asistente"]'),
+            );
+            const indice = campos.indexOf(campo);
+            if (indice >= 0) nombresGuardados[indice] = campo.value;
+            campo.setCustomValidity("");
+        });
 
         cantidades?.addEventListener("change", () => {
             eligioAMano = true;
@@ -815,6 +841,9 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             eligeCantidad =
                 (inv.funciones as { cantidad?: boolean } | undefined)?.cantidad ===
                 true;
+            pideAcompanantes =
+                (inv.funciones as { acompanantes?: boolean } | undefined)
+                    ?.acompanantes === true;
             for (const el of [pregunta, cantidades]) {
                 if (el) el.style.display = eligeCantidad ? "" : "none";
             }
@@ -826,6 +855,11 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                 eligioAMano = true;
             } else {
                 marcada = eligioAMano ? Math.min(anterior, pases) : pases;
+            }
+            if (primeraVez && Array.isArray(inv.acompanantes)) {
+                inv.acompanantes.forEach((nombre, i) => {
+                    nombresGuardados[i] = nombre;
+                });
             }
             pintarCantidades(marcada);
 
@@ -900,6 +934,33 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             const viene =
                 (e.submitter as HTMLButtonElement | null)?.value !== "no";
             const cantidad = elegida();
+            const nombresAsistentes = pideAcompanantes
+                ? Array.from(
+                      nombres?.querySelectorAll<HTMLInputElement>(
+                          'input[name="asistente"]',
+                      ) ?? [],
+                      (campo) => campo.value.trim(),
+                  )
+                : [];
+
+            if (
+                viene &&
+                pideAcompanantes &&
+                (nombresAsistentes.length !== cantidad ||
+                    nombresAsistentes.some((nombre) => !nombre))
+            ) {
+                const vacio = Array.from(
+                    nombres?.querySelectorAll<HTMLInputElement>(
+                        'input[name="asistente"]',
+                    ) ?? [],
+                ).find((campo) => !campo.value.trim());
+                if (vacio) {
+                    vacio.setCustomValidity("Escribe el nombre de cada persona que asistirá.");
+                    vacio.reportValidity();
+                    vacio.focus();
+                }
+                return;
+            }
 
             // La muestra no guarda nada
             if (!conectada) {
@@ -913,7 +974,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
 
             // Nunca lanza: si falla devuelve null
             const fila = viene
-                ? await confirmarAsistencia(true, cantidad)
+                ? await confirmarAsistencia(true, cantidad, nombresAsistentes)
                 : await confirmarAsistencia(false);
 
             enviando = false;
