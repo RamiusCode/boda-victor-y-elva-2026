@@ -1,22 +1,12 @@
 ---
-// src/pages/index.astro
-// MODO MUESTRA (temporal): la página principal se ve con un invitado
-// ficticio ("Familia Gutiérrez Rojas", 4 pases) para que el cliente vea el
-// diseño completo, con el nombre y el pase, antes de conectar el sistema.
-//
-// Cuando se conecte al panel de invitados (agente `conectar-al-sistema`),
-// volver a esta versión:
-//
-//   import LinkNoDisponible from "../components/LinkNoDisponible.astro";
-//   ...
-//   <LinkNoDisponible />
-//   <Invitacion conectado />
-//
-// Con `conectado`, el nombre y los pases llegan desde la base (/?i=k7m2p).
+// La invitación toma el nombre, pases y respuesta desde el panel Supabase
+// cuando el enlace incluye el código de invitado (?i=...).
 import Layout from "../layouts/Layout.astro";
 import Invitacion from "../components/Invitacion.astro";
+import LinkNoDisponible from "../components/LinkNoDisponible.astro";
 ---
 
 <Layout title="Victor & Elva | 18 de Diciembre 2026">
-    <Invitacion invitado="Familia Gutiérrez Rojas" pases={4} />
+    <LinkNoDisponible />
+    <Invitacion conectado />
 </Layout>

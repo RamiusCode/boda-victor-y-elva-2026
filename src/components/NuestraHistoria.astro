@@ -1,6 +1,6 @@
 ---
 // src/components/NuestraHistoria.astro - "Nuestra historia": un video
-// horizontal dentro de un marco tipo foto instantánea, sobre fondo verde.
+// vertical dentro de un marco tipo foto instantánea, sobre fondo verde.
 // El video arranca solo y sin sonido cuando aparece en pantalla, se repite,
 // y se pausa cuando sale. Tocándolo se pausa o sigue; abajo tiene una línea
 // de tiempo para adelantar o retroceder.
@@ -8,7 +8,7 @@
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const antetitulo = "Un pedacito de nosotros";
 const titulo = "Nuestra historia";
-const video = "/imagenes/video.mp4";
+const video = "/imagenes/video2.mp4";
 const novios = "Victor & Elva";
 const frase =
     "El amor es un regalo de Dios, y hoy celebramos la bendición de compartirlo el uno con el otro para siempre.";
@@ -118,7 +118,8 @@ const frase =
     .marco {
         position: relative;
         z-index: 1;
-        margin: 0;
+        width: 80cqw;
+        margin: 0 auto;
         padding: 3cqw 3cqw 0;
         background-image: linear-gradient(var(--crema), var(--crema));
         box-shadow: 0 10px 28px rgba(30, 40, 28, 0.35);
@@ -149,7 +150,7 @@ const frase =
     .pantalla {
         position: relative;
         overflow: hidden;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 9 / 16;
         background-image: linear-gradient(#3f4d3a, #3f4d3a);
     }
 

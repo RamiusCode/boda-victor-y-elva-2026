@@ -27,5 +27,6 @@ pnpm-debug.log*
 public/imagenes/*.png
 public/imagenes/*.gif
 public/fonts/Andrey Sharonov*
+src/assets/fotos-originales/
 # Copia de trabajo
 src copy/

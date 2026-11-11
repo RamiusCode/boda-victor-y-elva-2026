@@ -1,15 +1,20 @@
 ---
 // src/components/AlbumFotos.astro - "Álbum de fotos": una foto grande y un
 // collage de cinco debajo (dos chicas, una ancha y otras dos chicas).
-// Por ahora todas llevan la misma foto de muestra: cuando lleguen las de los
-// novios se cambian en la lista `fotos` (en el orden en que aparecen).
+// Fotos de la pareja y su perrito, optimizadas en WebP de alta calidad.
 
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const titulo = "Álbum de fotos";
-const muestra = "/imagenes/foto1.webp";
 const fotos = {
-    grande: muestra,
-    collage: [muestra, muestra, muestra, muestra, muestra],
+    grande: { src: "/imagenes/pareja-06.webp", alt: "Victor y Elva juntos frente a la capilla" },
+    collage: [
+        { src: "/imagenes/pareja-03.webp", alt: "Victor y Elva abrazados" },
+        { src: "/imagenes/pareja-07.webp", alt: "Victor y Elva compartiendo un momento especial" },
+        { src: "/imagenes/pareja-02.webp", alt: "Victor y Elva caminando juntos" },
+        { src: "/imagenes/pareja-08.webp", alt: "Victor y Elva celebrando su compromiso" },
+        { src: "/imagenes/pareja-09.webp", alt: "Victor y Elva en la sesión de fotos" },
+        { src: "/imagenes/pareja-10.webp", alt: "El perrito de Victor y Elva en el jardín" },
+    ],
 };
 // ──────────────────────────────────────────────────────────────
 ---
@@ -17,14 +22,14 @@ const fotos = {
 <section class="inv-seccion album">
     <h2 class="inv-titulo anima">{titulo}</h2>
 
-    <img src={fotos.grande} alt="Los novios" width="860" height="1290" class="foto grande anima" loading="lazy" />
+    <img src={fotos.grande.src} alt={fotos.grande.alt} width="860" height="1290" class="foto grande anima" loading="lazy" />
 
     <div class="collage">
         {
-            fotos.collage.map((src, i) => (
+            fotos.collage.map((foto, i) => (
                 <img
-                    src={src}
-                    alt="Los novios"
+                    src={foto.src}
+                    alt={foto.alt}
                     width="860"
                     height="1290"
                     class={`foto f${i + 1} anima`}
@@ -79,5 +84,10 @@ const fotos = {
     .f4,
     .f5 {
         aspect-ratio: 215 / 352;
+    }
+
+    .f6 {
+        grid-column: 1 / -1;
+        aspect-ratio: 2 / 3;
     }
 </style>
