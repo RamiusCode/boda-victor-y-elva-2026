@@ -22,7 +22,7 @@ const { title } = Astro.props;
 */
 // El ?v= se sube cada vez que cambia la imagen: WhatsApp guarda la vieja
 // por la dirección y así la toma como nueva.
-const miniatura = new URL('/imagenes/miniatura-whatsapp.jpg?v=8', Astro.site).href;
+const miniatura = new URL('/imagenes/miniatura-whatsapp.jpg?v=9', Astro.site).href;
 const paginaActual = new URL(Astro.url.pathname, Astro.site).href;
 // Sin texto en la tarjeta: WhatsApp necesita un título, así que va un
 // carácter invisible (relleno hangul). Se ve solo la imagen y el link.

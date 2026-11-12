@@ -84,16 +84,32 @@ const foto = "/imagenes/pareja-01.webp";
         const seccion = document.getElementById("sobre-novios");
         if (!seccion) return;
 
-        // ── Entrada: recién cuando se abre la portada (tapada no se ve) ──
-        const elementos = seccion.querySelectorAll(".anima");
+        // La portada dispara la entrada del logo, las flores y el reproductor
+        // a la vez. El versículo y la foto siguen con un pequeño desfase suave.
+        const flores = seccion.querySelectorAll(".flor-izq, .flor-der");
+        const logo = seccion.querySelector<HTMLElement>(".logo");
+        const contenido = seccion.querySelectorAll(".versiculo, .foto");
+        const elementos = [...Array.from(flores), ...(logo ? [logo] : []), ...Array.from(contenido)];
         gsap.set(elementos, { opacity: 0 });
+
         const entrar = () => {
             const menos = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            gsap.fromTo(
-                elementos,
-                { opacity: 0, y: menos ? 0 : 16 },
-                { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "sine.out", delay: 0.2 },
-            );
+            const duracion = menos ? 0.45 : 0.95;
+            const tl = gsap.timeline();
+
+            tl.fromTo(flores, { opacity: 0 }, { opacity: 1, duration: duracion, ease: "sine.out" }, 0)
+                .fromTo(
+                    logo,
+                    { opacity: 0, y: menos ? 0 : 12, scale: menos ? 1 : 0.97 },
+                    { opacity: 1, y: 0, scale: 1, duration: duracion, ease: "sine.out" },
+                    0,
+                )
+                .fromTo(
+                    contenido,
+                    { opacity: 0, y: menos ? 0 : 12 },
+                    { opacity: 1, y: 0, duration: menos ? 0.45 : 0.82, stagger: 0.12, ease: "sine.out" },
+                    menos ? 0 : 0.14,
+                );
         };
         if ((window as any).portadaAbierta) entrar();
         else window.addEventListener("portada-abierta", entrar, { once: true });

@@ -95,21 +95,21 @@
         /* Escondido hasta que haya melodía que controlar */
         opacity: 0;
         pointer-events: none;
-        transform: scale(0.8);
+        transform: translateY(8px) scale(0.9);
         transition:
-            opacity 0.35s ease,
-            transform 0.35s ease,
+            opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
             box-shadow 0.2s ease;
     }
 
     .boton-musica.visible {
         opacity: 1;
         pointer-events: auto;
-        transform: scale(1);
+        transform: translateY(0) scale(1);
     }
 
     .boton-musica:active {
-        transform: scale(0.92);
+        transform: translateY(0) scale(0.92);
         box-shadow: 0 2px 6px rgba(111, 122, 74, 0.4);
     }
 
@@ -135,7 +135,7 @@
 
     @media (prefers-reduced-motion: reduce) {
         .boton-musica {
-            transition: opacity 0.35s ease;
+            transition: opacity 0.4s ease;
         }
     }
 </style>
@@ -154,18 +154,12 @@
             iconoNota?.classList.toggle("oculto", sonando);
         };
 
-        /*
-           La melodía la crea la portada cuando tocan la tapa, así que acá
-           hay que esperarla. Se mira cada 200 ms y se deja de mirar apenas
-           aparece: sin ese corte, el intervalo seguiría corriendo toda la
-           visita para nada.
-        */
-        const esperar = setInterval(() => {
+        // Este mismo evento inicia el logo y las flores de la primera vista.
+        const mostrarConLaEntrada = () => {
             const audio = (window as any).audioGlobal as
                 | HTMLAudioElement
                 | undefined;
             if (!audio) return;
-            clearInterval(esperar);
 
             boton.classList.add("visible");
             pintarEstado(!audio.paused);
@@ -180,6 +174,9 @@
                 else audio.pause();
                 (window as any).estaReproduciendoGlobal = !audio.paused;
             });
-        }, 200);
+        };
+
+        if ((window as any).portadaAbierta) mostrarConLaEntrada();
+        else window.addEventListener("portada-abierta", mostrarConLaEntrada, { once: true });
     });
 </script>
