@@ -176,9 +176,9 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                         }
                     </div>
 
-                    <!-- Un campo de nombre por cada persona que asiste (los arma el script) -->
+                    <!-- El invitado principal ya está identificado; aquí se nombran sus acompañantes. -->
                     <div class="c-asistentes" id="c-asistentes">
-                        <p class="c-pregunta">¿Quién asistirá?</p>
+                        <p class="c-pregunta">Nombres de tus acompañantes</p>
                         <div class="c-nombres" id="c-nombres"></div>
                     </div>
 
@@ -771,8 +771,8 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             pintarNombres();
         }
 
-        // Un campo de nombre por cada persona que va a asistir: se agregan o
-        // se sacan según el número elegido, y lo ya escrito se conserva.
+        // El invitado principal cuenta como asistente. Se pide un campo por
+        // cada acompañante que eligió, y se conserva lo ya escrito.
         function pintarNombres() {
             if (!nombres || !asistentes) return;
             const actuales = Array.from(
@@ -782,10 +782,9 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                 nombresGuardados[i] = campo.value;
             });
 
+            const asistentesConfirmados = eligeCantidad ? elegida() : pases;
             const cuantos = pideAcompanantes
-                ? eligeCantidad
-                    ? elegida()
-                    : pases
+                ? Math.max(asistentesConfirmados - 1, 0)
                 : 0;
             asistentes.style.display = cuantos > 0 ? "" : "none";
             const etiquetas = nombres.querySelectorAll<HTMLElement>(".c-asistente");
@@ -797,8 +796,8 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                 campo.name = "asistente";
                 campo.autocomplete = "off";
                 campo.maxLength = 100;
-                campo.placeholder = `Nombre de la persona ${i + 1}`;
-                campo.setAttribute("aria-label", `Nombre de la persona ${i + 1}`);
+                campo.placeholder = `Nombre del acompañante ${i + 1}`;
+                campo.setAttribute("aria-label", `Nombre del acompañante ${i + 1}`);
                 campo.value = nombresGuardados[i] ?? "";
                 etiqueta.append(campo);
                 nombres.append(etiqueta);
@@ -934,6 +933,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             const viene =
                 (e.submitter as HTMLButtonElement | null)?.value !== "no";
             const cantidad = elegida();
+            const cantidadAcompanantes = Math.max(cantidad - 1, 0);
             const nombresAsistentes = pideAcompanantes
                 ? Array.from(
                       nombres?.querySelectorAll<HTMLInputElement>(
@@ -946,7 +946,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
             if (
                 viene &&
                 pideAcompanantes &&
-                (nombresAsistentes.length !== cantidad ||
+                (nombresAsistentes.length !== cantidadAcompanantes ||
                     nombresAsistentes.some((nombre) => !nombre))
             ) {
                 const vacio = Array.from(
@@ -955,7 +955,7 @@ const teEsperamos = "Te esperamos el 18 de diciembre para celebrar juntos.";
                     ) ?? [],
                 ).find((campo) => !campo.value.trim());
                 if (vacio) {
-                    vacio.setCustomValidity("Escribe el nombre de cada persona que asistirá.");
+                    vacio.setCustomValidity("Escribe el nombre de cada acompañante.");
                     vacio.reportValidity();
                     vacio.focus();
                 }
