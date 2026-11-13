@@ -8,6 +8,7 @@
 const versiculo =
     "“Dos son mejor que uno, porque obtienen más fruto de su esfuerzo. Y si caen, uno levantará al otro.”";
 const cita = "Eclesiastés 4:9-10";
+const cierre = "¡TE ESPERAMOS!";
 // ──────────────────────────────────────────────────────────────
 ---
 
@@ -19,6 +20,8 @@ const cita = "Eclesiastés 4:9-10";
         {versiculo}<br />
         <span class="cita">{cita}</span>
     </p>
+
+    <h2 class="inv-titulo cierre">{cierre}</h2>
 </section>
 
 <style>
@@ -53,6 +56,10 @@ const cita = "Eclesiastés 4:9-10";
         font-size: 4cqw;
         line-height: 1.5;
         color: var(--verde);
+    }
+
+    .cierre {
+        margin-top: 8cqw;
     }
 
     .cita {
