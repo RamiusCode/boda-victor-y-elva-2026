@@ -4,6 +4,7 @@
 // agendarla en el calendario, la segunda foto y un mensaje de los novios.
 // Los números de la cuenta los llena el script y los actualiza cada segundo.
 import Mano from "./Mano.astro";
+import Calendario from "./Calendario.astro";
 
 // ── DATOS EDITABLES ───────────────────────────────────────────
 const invitamos = "Tenemos el honor de invitarte a nuestra boda que se realizará el día.";
@@ -77,6 +78,8 @@ const unidades = [
         </div>
         <span class="filete" aria-hidden="true"><i></i></span>
     </div>
+
+    <Calendario />
 
     {/* Botón "Agendar en el calendario": desactivado por ahora. Si los
         novios lo quieren, quitar este comentario (el enlace de Google
